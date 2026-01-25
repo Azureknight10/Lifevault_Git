@@ -202,6 +202,14 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.card-video {
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  aspect-ratio: 16 / 9;
+}
+
     .card h3 {
       font-size: 15px;
       font-weight: 600;
@@ -315,117 +323,148 @@
   </div>
 
   <script>
-    const resourcesUrl = "data/resources.json";
-    const searchInput = document.getElementById("searchInput");
-    const categoryFilter = document.getElementById("categoryFilter");
-    const resourcesGrid = document.getElementById("resourcesGrid");
+  const resourcesUrl = "data/resources.json";
+  const searchInput = document.getElementById("searchInput");
+  const categoryFilter = document.getElementById("categoryFilter");
+  const resourcesGrid = document.getElementById("resourcesGrid");
 
-    let resources = [];
-    let activeCategory = "all";
-    let searchTerm = "";
+  let resources = [];
+  let activeCategory = "all";
+  let searchTerm = "";
 
-    async function loadResources() {
-      try {
-        const res = await fetch(resourcesUrl);
-        if (!res.ok) throw new Error("Failed to load resources.json");
-        const data = await res.json();
-        resources = Array.isArray(data) ? data : [];
-        renderResources();
-      } catch (err) {
-        resourcesGrid.innerHTML = `
-          <div class="empty-state">
-            <strong>Unable to load resources.</strong>
-            Check that <code>data/resources.json</code> exists and is valid JSON.
-          </div>
-        `;
-        console.error(err);
-      }
-    }
-
-    function matchesSearch(item, term) {
-      if (!term) return true;
-      const t = term.toLowerCase();
-      return (
-        (item.title || "").toLowerCase().includes(t) ||
-        (item.description || "").toLowerCase().includes(t)
-      );
-    }
-
-    function matchesCategory(item, category) {
-      if (category === "all") return true;
-      const c = (item.category || "").toLowerCase();
-      return c === category;
-    }
-
-    function isImageUrl(url) {
-      return url && /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(url);
-    }
-
-    function renderResources() {
-      const filtered = resources
-        .filter((item) => matchesSearch(item, searchTerm))
-        .filter((item) => matchesCategory(item, activeCategory));
-
-      if (!filtered.length) {
-        resourcesGrid.innerHTML = `
-          <div class="empty-state">
-            <strong>No resources match this view.</strong>
-            Try changing the category or clearing the search.
-          </div>
-        `;
-        return;
-      }
-
-      resourcesGrid.innerHTML = filtered
-        .map((item) => {
-          const safeTitle = item.title || "Untitled";
-          const safeDesc = item.description || "";
-          const date = item.date ? new Date(item.date).toLocaleDateString() : "";
-          const category = item.category || "";
-          const hasUrl = Boolean(item.url);
-          const image = hasUrl && isImageUrl(item.url);
-          const linkable = hasUrl && !image;
-
-          return `
-            <article class="card">
-              ${image ? `<img src="${item.url}" alt="${safeTitle}" class="card-image">` : ""}
-              <h3>
-                ${
-                  linkable
-                    ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer">${safeTitle}</a>`
-                    : safeTitle
-                }
-              </h3>
-              <p class="description">${safeDesc}</p>
-              <div class="meta">
-                <span>${date}</span>
-                ${category ? `<span class="category-badge">${category}</span>` : ""}
-              </div>
-            </article>
-          `;
-        })
-        .join("");
-    }
-
-    searchInput.addEventListener("input", (e) => {
-      searchTerm = e.target.value.trim();
+  async function loadResources() {
+    try {
+      const res = await fetch(resourcesUrl);
+      if (!res.ok) throw new Error("Failed to load resources.json");
+      const data = await res.json();
+      resources = Array.isArray(data) ? data : [];
       renderResources();
-    });
+    } catch (err) {
+      resourcesGrid.innerHTML = `
+        <div class="empty-state">
+          <strong>Unable to load resources.</strong>
+          Check that <code>data/resources.json</code> exists and is valid JSON.
+        </div>
+      `;
+      console.error(err);
+    }
+  }
 
-    categoryFilter.addEventListener("click", (e) => {
-      const btn = e.target.closest("button[data-category]");
-      if (!btn) return;
+  function matchesSearch(item, term) {
+    if (!term) return true;
+    const t = term.toLowerCase();
+    return (
+      (item.title || "").toLowerCase().includes(t) ||
+      (item.description || "").toLowerCase().includes(t)
+    );
+  }
 
-      document
-        .querySelectorAll(".filter-chip")
-        .forEach((chip) => chip.classList.remove("active"));
+  function matchesCategory(item, category) {
+    if (category === "all") return true;
+    const c = (item.category || "").toLowerCase();
+    return c === category;
+  }
 
-      btn.classList.add("active");
-      activeCategory = btn.dataset.category;
-      renderResources();
-    });
+  function isImageUrl(url) {
+    return url && /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(url);
+  }
 
-    loadResources();
-  </script>
+  function isYouTubeUrl(url) {
+    return url && /youtube\.com\/watch\?v=|youtu\.be\//i.test(url);
+  }
+
+  function toYouTubeEmbed(url) {
+    if (!url) return "";
+    const shortMatch = url.match(/youtu\.be\/([^?&]+)/i);
+    if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+
+    const fullMatch = url.match(/[?&]v=([^&]+)/i);
+    if (fullMatch) return `https://www.youtube.com/embed/${fullMatch[1]}`;
+
+    return url;
+  }
+
+  function renderResources() {
+    const filtered = resources
+      .filter((item) => matchesSearch(item, searchTerm))
+      .filter((item) => matchesCategory(item, activeCategory));
+
+    if (!filtered.length) {
+      resourcesGrid.innerHTML = `
+        <div class="empty-state">
+          <strong>No resources match this view.</strong>
+          Try changing the category or clearing the search.
+        </div>
+      `;
+      return;
+    }
+
+    resourcesGrid.innerHTML = filtered
+      .map((item) => {
+        const safeTitle = item.title || "Untitled";
+        const safeDesc = item.description || "";
+        const date = item.date ? new Date(item.date).toLocaleDateString() : "";
+        const category = item.category || "";
+        const hasUrl = Boolean(item.url);
+
+        const isImage = hasUrl && isImageUrl(item.url);
+        const isYouTube = hasUrl && isYouTubeUrl(item.url);
+        const videoEmbedUrl = isYouTube ? toYouTubeEmbed(item.url) : "";
+        const linkable = hasUrl && !isImage && !isYouTube;
+
+        return `
+          <article class="card">
+            ${
+              isImage
+                ? `<img src="${item.url}" alt="${safeTitle}" class="card-image">`
+                : isYouTube
+                ? `<iframe
+                     class="card-video"
+                     src="${videoEmbedUrl}"
+                     title="${safeTitle}"
+                     frameborder="0"
+                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                     allowfullscreen
+                   ></iframe>`
+                : ""
+            }
+            <h3>
+              ${
+                linkable
+                  ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer">${safeTitle}</a>`
+                  : safeTitle
+              }
+            </h3>
+            <p class="description">${safeDesc}</p>
+            <div class="meta">
+              <span>${date}</span>
+              ${category ? `<span class="category-badge">${category}</span>` : ""}
+            </div>
+          </article>
+        `;
+      })
+      .join("");
+  }
+
+  searchInput.addEventListener("input", (e) => {
+    searchTerm = e.target.value.trim();
+    renderResources();
+  });
+
+  categoryFilter.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-category]");
+    if (!btn) return;
+
+    document
+      .querySelectorAll(".filter-chip")
+      .forEach((chip) => chip.classList.remove("active"));
+
+    btn.classList.add("active");
+    activeCategory = btn.dataset.category;
+    renderResources();
+  });
+
+  loadResources();
+</script>
 </body>
 </html>
