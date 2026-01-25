@@ -437,12 +437,10 @@ function renderResources() {
               : ""
           }
           <h3>
-            ${
-              linkable
-                ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer">${safeTitle}</a>`
-                : safeTitle
-            }
-          </h3>
+  <a href="resource.html?id=${encodeURIComponent(item.id || '')}">
+    ${safeTitle}
+  </a>
+</h3>
           <p class="description">${previewDesc}</p>
           <div class="meta">
             <span>${date}</span>
