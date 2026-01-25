@@ -2,300 +2,409 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lifevault Resources Test</title>
+  <title>Lifevault Resources</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      color: #f5f5f5;
-      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0891b2 100%);
-      padding: 2rem 1rem;
+    :root {
+      color-scheme: dark;
+      --bg: #050608;
+      --bg-elevated: #10121a;
+      --card-bg: #151826;
+      --accent: #8f7bff;
+      --accent-soft: rgba(143, 123, 255, 0.2);
+      --text: #f5f5ff;
+      --muted: #a3a6c2;
+      --border: #26293a;
+      --danger: #ff6b81;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.65);
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #141631 0, #050608 55%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 16px 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .back-link span {
+      font-size: 18px;
+      line-height: 0;
     }
 
     header {
-      text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 24px;
     }
 
-    h1 {
-      font-size: 2.5rem;
-      margin: 0 0 0.5rem 0;
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    header h1 {
+      font-size: 30px;
+      font-weight: 650;
+      margin-bottom: 6px;
     }
 
-    .tagline {
-      color: #cbd5e1;
-      font-size: 1rem;
-    }
-
-    .back-btn {
-      display: inline-block;
-      margin-bottom: 1.5rem;
-      padding: 0.5rem 1rem;
-      background: rgba(59, 130, 246, 0.3);
-      border: 2px solid #3b82f6;
-      border-radius: 8px;
-      color: #bfdbfe;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .back-btn:hover {
-      background: rgba(59, 130, 246, 0.5);
-      transform: translateX(-4px);
+    header p {
+      font-size: 14px;
+      color: var(--muted);
     }
 
     .controls {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
       flex-wrap: wrap;
+      gap: 14px;
       align-items: center;
+      margin-bottom: 18px;
+      padding: 14px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(120deg, rgba(143, 123, 255, 0.18), transparent);
+      border: 1px solid rgba(143, 123, 255, 0.4);
     }
 
-    .search-box {
-      flex: 1;
-      min-width: 250px;
-      padding: 0.75rem 1rem;
-      background: rgba(15, 23, 42, 0.6);
-      border: 2px solid #3b82f6;
-      border-radius: 8px;
-      color: #f5f5f5;
-      font-size: 1rem;
+    .search-wrap {
+      flex: 1 1 220px;
+      position: relative;
     }
 
-    .search-box::placeholder {
-      color: #94a3b8;
+    .search-input {
+      width: 100%;
+      padding: 9px 10px 9px 28px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: rgba(5, 6, 8, 0.85);
+      color: var(--text);
+      font-size: 14px;
     }
 
-    .filter-group {
+    .search-input::placeholder {
+      color: #6f7393;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: #6f7393;
+      pointer-events: none;
+    }
+
+    .category-filter {
       display: flex;
-      gap: 0.5rem;
       flex-wrap: wrap;
+      gap: 6px;
+      font-size: 13px;
     }
 
-    .filter-btn {
-      padding: 0.5rem 1rem;
-      background: rgba(15, 23, 42, 0.6);
-      border: 2px solid #475569;
-      border-radius: 20px;
-      color: #cbd5e1;
+    .filter-chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(5, 6, 8, 0.92);
+      color: var(--muted);
       cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-      white-space: nowrap;
+      user-select: none;
     }
 
-    .filter-btn:hover {
-      border-color: #60a5fa;
-      background: rgba(59, 130, 246, 0.2);
+    .filter-chip.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--text);
     }
 
-    .filter-btn.active {
-      background: rgba(59, 130, 246, 0.4);
-      border-color: #3b82f6;
-      color: #fff;
+    .pill {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
     }
 
-    #resources {
+    .resources-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
     }
 
     .card {
-      background: rgba(15, 23, 42, 0.7);
-      border: 2px solid #334155;
-      border-radius: 12px;
-      padding: 1.5rem;
-      transition: all 0.3s;
-      backdrop-filter: blur(10px);
+      background: radial-gradient(circle at top left, rgba(143, 123, 255, 0.18), rgba(10, 11, 16, 0.98));
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      border: 1px solid rgba(38, 41, 58, 0.9);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 150px;
     }
 
-    .card:hover {
-      border-color: #3b82f6;
-      transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
+    .card-image {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      object-fit: cover;
+      max-height: 200px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
 
     .card h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 1.1rem;
+      font-size: 16px;
+      font-weight: 600;
     }
 
     .card h3 a {
-      color: #bfdbfe;
-      text-decoration: none;
-      transition: color 0.2s;
+      color: var(--text);
     }
 
     .card h3 a:hover {
-      color: #60a5fa;
+      text-decoration: underline;
     }
 
     .card .description {
-      color: #cbd5e1;
-      font-size: 0.95rem;
-      margin: 0.5rem 0;
-      line-height: 1.5;
+      font-size: 13px;
+      color: var(--muted);
     }
 
-    .card .meta {
-      color: #94a3b8;
-      font-size: 0.85rem;
-      margin-top: 0.75rem;
+    .meta {
+      margin-top: 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 11px;
+      color: #8e92b0;
     }
 
     .category-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      background: rgba(59, 130, 246, 0.3);
-      border-radius: 12px;
-      font-size: 0.75rem;
-      color: #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(143, 123, 255, 0.16);
+      border: 1px solid rgba(143, 123, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 10px;
     }
 
-    .no-results {
+    .empty-state {
       text-align: center;
-      color: #94a3b8;
-      font-size: 1.1rem;
-      padding: 3rem 1rem;
-      grid-column: 1 / -1;
+      padding: 40px 20px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed var(--border);
+      background: rgba(5, 6, 8, 0.9);
+      color: var(--muted);
+      font-size: 14px;
     }
 
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2rem;
-      }
+    .empty-state strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 6px;
+    }
 
-      #resources {
-        grid-template-columns: 1fr;
+    @media (max-width: 600px) {
+      body {
+        padding: 22px 10px 30px;
       }
-
+      header h1 {
+        font-size: 24px;
+      }
       .controls {
-        flex-direction: column;
-      }
-
-      .search-box {
-        width: 100%;
+        padding: 10px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <a href="index.html" class="back-btn">← Back to Vault</a>
+  <div class="shell">
+    <a class="back-link" href="index.html">
+      <span>←</span> Back to Vault
+    </a>
 
     <header>
-      <h1>Lifevault Resources</h1>
-      <p class="tagline">Your daily growth collection</p>
+      <p class="pill">Lifevault</p>
+      <h1>Resources</h1>
+      <p>Your curated collection of links, quotes, and anchors for daily growth.</p>
     </header>
 
-    <div class="controls">
-      <input 
-        type="text" 
-        id="searchBox" 
-        class="search-box" 
-        placeholder="Search resources..."
-      />
-      
-      <div class="filter-group">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="physical-health">Physical Health</button>
-        <button class="filter-btn" data-filter="relationships">Relationships</button>
-        <button class="filter-btn" data-filter="personal-growth">Personal Growth</button>
-        <button class="filter-btn" data-filter="creation">Creation</button>
-        <button class="filter-btn" data-filter="spirituality">Spirituality</button>
-        <button class="filter-btn" data-filter="emotions">Emotions</button>
-        <button class="filter-btn" data-filter="finance">Finance</button>
-        <button class="filter-btn" data-filter="career tips">Career</button>
+    <section class="controls">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          id="searchInput"
+          class="search-input"
+          type="search"
+          placeholder="Search by title or description..."
+          aria-label="Search resources"
+        />
       </div>
-    </div>
 
-    <div id="resources"></div>
+      <div class="category-filter" id="categoryFilter">
+        <span class="pill">Category</span>
+        <button class="filter-chip active" data-category="all">All</button>
+        <button class="filter-chip" data-category="physical health">Physical Health</button>
+        <button class="filter-chip" data-category="relationships">Relationships</button>
+        <button class="filter-chip" data-category="personal growth">Personal Growth</button>
+        <button class="filter-chip" data-category="creation">Creation</button>
+        <button class="filter-chip" data-category="spirituality">Spirituality</button>
+        <button class="filter-chip" data-category="emotions">Emotions</button>
+        <button class="filter-chip" data-category="finance">Finance</button>
+        <button class="filter-chip" data-category="career">Career</button>
+      </div>
+    </section>
+
+    <main id="resourcesGrid" class="resources-grid" aria-live="polite">
+      <!-- Cards injected by JS -->
+    </main>
   </div>
 
   <script>
-    let allResources = [];
-    let currentFilter = 'all';
-    let currentSearch = '';
+    const resourcesUrl = "data/resources.json";
 
-    // Load resources from JSON
-    fetch('data/resources.json')
-      .then(response => response.json())
-      .then(data => {
-        allResources = data;
+    const searchInput = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const resourcesGrid = document.getElementById("resourcesGrid");
+
+    let resources = [];
+    let activeCategory = "all";
+    let searchTerm = "";
+
+    async function loadResources() {
+      try {
+        const res = await fetch(resourcesUrl);
+        if (!res.ok) throw new Error("Failed to load resources.json");
+        const data = await res.json();
+        resources = Array.isArray(data) ? data : [];
         renderResources();
-      })
-      .catch(err => {
-        document.getElementById('resources').innerHTML = 
-          '<p class="no-results">Error loading resources. Please check that data/resources.json exists.</p>';
-        console.error('Error loading resources:', err);
-      });
+      } catch (err) {
+        resourcesGrid.innerHTML = `
+          <div class="empty-state">
+            <strong>Unable to load resources.</strong>
+            Check that <code>data/resources.json</code> exists and is valid JSON.
+          </div>
+        `;
+        console.error(err);
+      }
+    }
+
+    function matchesSearch(item, term) {
+      if (!term) return true;
+      const t = term.toLowerCase();
+      return (
+        (item.title || "").toLowerCase().includes(t) ||
+        (item.description || "").toLowerCase().includes(t)
+      );
+    }
+
+    function matchesCategory(item, category) {
+      if (category === "all") return true;
+      const c = (item.category || "").toLowerCase();
+      return c === category;
+    }
+
+    function isImageUrl(url) {
+      return url && /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(url);
+    }
 
     function renderResources() {
-      const container = document.getElementById('resources');
-      
-      // Filter resources
-      let filtered = allResources.filter(item => {
-        const matchesFilter = currentFilter === 'all' || 
-          (item.category && item.category.toLowerCase() === currentFilter);
-        
-        const matchesSearch = currentSearch === '' || 
-          item.title.toLowerCase().includes(currentSearch.toLowerCase()) ||
-          (item.description && item.description.toLowerCase().includes(currentSearch.toLowerCase()));
-        
-        return matchesFilter && matchesSearch;
-      });
+      const filtered = resources
+        .filter((item) => matchesSearch(item, searchTerm))
+        .filter((item) => matchesCategory(item, activeCategory));
 
-      // Sort by date (newest first)
-      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      if (filtered.length === 0) {
-        container.innerHTML = '<p class="no-results">No resources found. Try a different search or filter.</p>';
+      if (!filtered.length) {
+        resourcesGrid.innerHTML = `
+          <div class="empty-state">
+            <strong>No resources match this view.</strong>
+            Try changing the category or clearing the search.
+          </div>
+        `;
         return;
       }
 
-      container.innerHTML = filtered.map(item => `
-        <article class="card">
-          <h3><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.title}</a></h3>
-          <p class="description">${item.description || ''}</p>
-          <div class="meta">
-            <span>${item.date}</span>
-            ${item.category ? `<span class="category-badge">${item.category}</span>` : ''}
-          </div>
-        </article>
-      `).join('');
+      resourcesGrid.innerHTML = filtered
+        .map((item) => {
+          const safeTitle = item.title || "Untitled";
+          const safeDesc = item.description || "";
+          const date = item.date || "";
+          const category = item.category || "";
+
+          const hasUrl = Boolean(item.url);
+          const image = hasUrl && isImageUrl(item.url);
+          const linkable = hasUrl && !image;
+
+          return `
+            <article class="card">
+              ${image ? `<img src="${item.url}" alt="${safeTitle}" class="card-image">` : ""}
+              <h3>
+                ${
+                  linkable
+                    ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer">${safeTitle}</a>`
+                    : safeTitle
+                }
+              </h3>
+              <p class="description">${safeDesc}</p>
+              <div class="meta">
+                <span>${date}</span>
+                ${
+                  category
+                    ? `<span class="category-badge">${category}</span>`
+                    : ""
+                }
+              </div>
+            </article>
+          `;
+        })
+        .join("");
     }
 
-    // Filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        renderResources();
-      });
-    });
-
-    // Search box
-    document.getElementById('searchBox').addEventListener('input', (e) => {
-      currentSearch = e.target.value;
+    searchInput.addEventListener("input", (e) => {
+      searchTerm = e.target.value.trim();
       renderResources();
     });
+
+    categoryFilter.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-category]");
+      if (!btn) return;
+
+      document
+        .querySelectorAll(".filter-chip")
+        .forEach((chip) => chip.classList.remove("active"));
+      btn.classList.add("active");
+
+      activeCategory = btn.dataset.category;
+      renderResources();
+    });
+
+    loadResources();
   </script>
 </body>
 </html>
-
