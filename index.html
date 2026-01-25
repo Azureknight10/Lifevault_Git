@@ -29,6 +29,13 @@
       margin-bottom: 2rem;
     }
 
+    .circles-wrapper {
+      display: flex;
+      gap: 4rem;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
     .circle-container {
       position: relative;
       width: 200px;
@@ -82,11 +89,57 @@
       padding: 20px;
     }
 
+    /* Breathing circle styles */
+    .breathing-circle {
+      border-color: #10b981;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .breathing-circle:hover {
+      border-color: #34d399;
+    }
+
+    .breathing-visual {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #10b981, transparent);
+      opacity: 0.3;
+      transition: all 0.3s ease-in-out;
+      z-index: 1;
+    }
+
+    .breathing-visual.inhale {
+      width: 160px;
+      height: 160px;
+      opacity: 0.6;
+      background: radial-gradient(circle, #34d399, #10b981);
+    }
+
+    .breathing-visual.exhale {
+      width: 80px;
+      height: 80px;
+      opacity: 0.2;
+      background: radial-gradient(circle, #059669, transparent);
+    }
+
     .instruction {
       margin-top: 2rem;
       font-size: 0.9rem;
       color: #cbd5e1;
       text-align: center;
+      max-width: 600px;
+    }
+
+    @media (max-width: 768px) {
+      .circles-wrapper {
+        flex-direction: column;
+        gap: 2rem;
+      }
     }
   </style>
 </head>
@@ -94,18 +147,35 @@
   <h1>Lifevault</h1>
   <p>Welcome to my daily growth vault.</p>
 
-  <div class="circle-container" id="circleContainer">
-    <div class="circle" id="circle">
-      <div class="water" id="water"></div>
-      <div class="circle-text" id="circleText">
-        Hold to Enter
+  <div class="circles-wrapper">
+    <!-- Breathing Circle -->
+    <div class="circle-container" id="breathingContainer">
+      <div class="circle breathing-circle" id="breathingCircle">
+        <div class="breathing-visual" id="breathingVisual"></div>
+        <div class="circle-text" id="breathingText">
+          Hold to Breathe
+        </div>
+      </div>
+    </div>
+
+    <!-- Entrance Circle -->
+    <div class="circle-container" id="circleContainer">
+      <div class="circle" id="circle">
+        <div class="water" id="water"></div>
+        <div class="circle-text" id="circleText">
+          Hold to Enter
+        </div>
       </div>
     </div>
   </div>
 
-  <p class="instruction">Click and hold the circle for 5 seconds</p>
+  <p class="instruction">
+    <strong>Left:</strong> Breathing exercise (20-30 breaths) • 
+    <strong>Right:</strong> Enter Lifevault (hold 5s)
+  </p>
 
   <script>
+    // ==================== ENTRANCE CIRCLE ====================
     const circle = document.getElementById('circle');
     const water = document.getElementById('water');
     const circleText = document.getElementById('circleText');
@@ -113,7 +183,7 @@
     let holdTimer = null;
     let fillInterval = null;
     let startTime = 0;
-    const HOLD_DURATION = 5000; // 5 seconds in milliseconds
+    const HOLD_DURATION = 5000;
 
     function startFilling() {
       startTime = Date.now();
@@ -125,7 +195,6 @@
         
         water.style.height = fillHeight + '%';
         
-        // Update text with countdown
         const secondsLeft = Math.ceil((HOLD_DURATION - elapsed) / 1000);
         if (secondsLeft > 0) {
           circleText.textContent = secondsLeft + 's';
@@ -135,7 +204,6 @@
       }, 50);
 
       holdTimer = setTimeout(() => {
-        // Redirect to resources page after 5 seconds
         window.location.href = 'resources.html';
       }, HOLD_DURATION);
     }
@@ -151,12 +219,10 @@
         fillInterval = null;
       }
       
-      // Reset water level
       water.style.height = '0%';
       circleText.textContent = 'Hold to Enter';
     }
 
-    // Mouse events
     circle.addEventListener('mousedown', (e) => {
       e.preventDefault();
       startFilling();
@@ -165,7 +231,6 @@
     circle.addEventListener('mouseup', stopFilling);
     circle.addEventListener('mouseleave', stopFilling);
 
-    // Touch events for mobile
     circle.addEventListener('touchstart', (e) => {
       e.preventDefault();
       startFilling();
@@ -173,6 +238,114 @@
 
     circle.addEventListener('touchend', stopFilling);
     circle.addEventListener('touchcancel', stopFilling);
+
+    // ==================== BREATHING CIRCLE ====================
+    const breathingCircle = document.getElementById('breathingCircle');
+    const breathingVisual = document.getElementById('breathingVisual');
+    const breathingText = document.getElementById('breathingText');
+
+    let breathingInterval = null;
+    let breathCount = 0;
+    const MAX_BREATHS = 30;
+    const BREATH_CYCLE_MS = 1000; // 1 second per full breath (500ms inhale, 500ms exhale)
+    const INHALE_MS = 500;
+    const EXHALE_MS = 500;
+
+    function startBreathing() {
+      breathCount = 0;
+      let isInhaling = true;
+      let cycleStart = Date.now();
+
+      breathingInterval = setInterval(() => {
+        const elapsed = Date.now() - cycleStart;
+
+        if (isInhaling) {
+          // Inhale phase
+          breathingVisual.classList.add('inhale');
+          breathingVisual.classList.remove('exhale');
+          breathingText.textContent = `Inhale\n${breathCount}/${MAX_BREATHS}`;
+
+          if (elapsed >= INHALE_MS) {
+            isInhaling = false;
+            cycleStart = Date.now();
+          }
+        } else {
+          // Exhale phase
+          breathingVisual.classList.add('exhale');
+          breathingVisual.classList.remove('inhale');
+          breathingText.textContent = `Exhale\n${breathCount}/${MAX_BREATHS}`;
+
+          if (elapsed >= EXHALE_MS) {
+            isInhaling = true;
+            cycleStart = Date.now();
+            breathCount++;
+
+            // Check if we've completed all breaths
+            if (breathCount >= MAX_BREATHS) {
+              stopBreathing(true);
+            }
+          }
+        }
+      }, 50);
+    }
+
+    function stopBreathing(completed = false) {
+      if (breathingInterval) {
+        clearInterval(breathingInterval);
+        breathingInterval = null;
+      }
+
+      breathingVisual.classList.remove('inhale', 'exhale');
+      
+      if (completed) {
+        breathingText.textContent = `Complete!\nRest & Breathe Normally`;
+        setTimeout(() => {
+          breathingText.textContent = 'Hold to Breathe';
+        }, 5000);
+      } else {
+        breathingText.textContent = 'Hold to Breathe';
+      }
+      
+      breathCount = 0;
+    }
+
+    breathingCircle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      if (!breathingInterval) {
+        startBreathing();
+      }
+    });
+
+    breathingCircle.addEventListener('mouseup', (e) => {
+      if (breathCount < MAX_BREATHS) {
+        stopBreathing(false);
+      }
+    });
+
+    breathingCircle.addEventListener('mouseleave', (e) => {
+      if (breathCount < MAX_BREATHS) {
+        stopBreathing(false);
+      }
+    });
+
+    breathingCircle.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (!breathingInterval) {
+        startBreathing();
+      }
+    });
+
+    breathingCircle.addEventListener('touchend', (e) => {
+      if (breathCount < MAX_BREATHS) {
+        stopBreathing(false);
+      }
+    });
+
+    breathingCircle.addEventListener('touchcancel', (e) => {
+      if (breathCount < MAX_BREATHS) {
+        stopBreathing(false);
+      }
+    });
   </script>
 </body>
 </html>
