@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lifevault Journal</title>
     <style>
+        .history-item {
+  width: 100%;
+  text-align: left;
+  margin-top: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(15, 23, 42, 0.6);
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.history-item:hover {
+  border-color: #a5b4fc;
+  background: rgba(30, 64, 175, 0.6);
+}
+
         body {
             margin: 0;
             min-height: 100vh;
@@ -31,6 +48,7 @@
             line-height: 1.6;
             text-align: center;
         }
+        
         textarea {
             width: 100%;
             max-width: 640px;
@@ -88,71 +106,175 @@
     <h1>Daily Journal</h1>
     <div class="date" id="journalDate"></div>
 
-    <div class="prompt" id="journalPrompt">
-        Today’s prompt: When you look at your life right now, what is one habit, belief, or pattern you’re ready to shed so you can grow into the person you want to become?
-    </div>
+<div class="prompt" id="journalPrompt">
+    Today’s prompt: When you look at your life right now, what is one habit, belief, or pattern you’re ready to shed so you can grow into the person you want to become?
+</div>
 
-    <textarea id="journalEntry" placeholder="Write freely. This is your space—no judgment, no edits."></textarea>
+<div style="margin-bottom: 0.75rem; font-size: 0.9rem;">
+  Today I felt:
+  <label style="margin-left: 0.5rem;">
+    <input type="radio" name="journalMood" value="Low" /> Low
+  </label>
+  <label style="margin-left: 0.5rem;">
+    <input type="radio" name="journalMood" value="Neutral" /> Neutral
+  </label>
+  <label style="margin-left: 0.5rem;">
+    <input type="radio" name="journalMood" value="Strong" /> Strong
+  </label>
+</div>
+
+<textarea id="journalEntry" placeholder="Write freely. This is your space—no judgment, no edits."></textarea>
+
 
     <div class="buttons">
         <button class="btn btn-primary" id="saveEntry">Save Today’s Entry</button>
         <button class="btn btn-secondary" id="clearEntry">Clear</button>
     </div>
 
-    <div class="status" id="statusMessage"></div>
+<div class="status" id="statusMessage"></div>
 
-    <div class="back-link">
-        <a href="index.html">← Back to Lifevault</a>
-    </div>
+<h2 style="margin-top: 2rem; font-size: 1.1rem;">Recent entries</h2>
+<div id="journalHistory" style="width: 100%; max-width: 640px;"></div>
+
+<div class="back-link">
+    <a href="index.html">← Back to Lifevault</a>
+</div>
+
 
     <script>
-        const dateEl = document.getElementById('journalDate');
-        const promptEl = document.getElementById('journalPrompt');
-        const entryEl = document.getElementById('journalEntry');
-        const statusEl = document.getElementById('statusMessage');
-        const saveBtn = document.getElementById('saveEntry');
-        const clearBtn = document.getElementById('clearEntry');
+  const dateEl = document.getElementById('journalDate');
+  const entryEl = document.getElementById('journalEntry');
+  const statusEl = document.getElementById('statusMessage');
+  const saveBtn = document.getElementById('saveEntry');
+  const clearBtn = document.getElementById('clearEntry');
 
-        function getTodayKey() {
-            const d = new Date();
-            return d.toISOString().slice(0, 10); // YYYY-MM-DD
-        }
+  // NEW: mood radio buttons (you'll add them in HTML in the next step)
+  const moodInputs = document.querySelectorAll('input[name="journalMood"]');
+  const historyListEl = document.getElementById('journalHistory');
 
-        function formatTodayLabel() {
-            const d = new Date();
-            return d.toLocaleDateString(undefined, {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
+  function getTodayKey() {
+    const d = new Date();
+    return d.toISOString().slice(0, 10); // YYYY-MM-DD
+  }
 
-        function loadToday() {
-            const key = 'lifevault-journal-' + getTodayKey();
-            const saved = localStorage.getItem(key);
-            if (saved) {
-                entryEl.value = saved;
-                statusEl.textContent = 'Loaded your saved entry for today.';
-            } else {
-                entryEl.value = '';
-                statusEl.textContent = '';
-            }
-            dateEl.textContent = formatTodayLabel();
-        }
+  function formatDateLabel(dateStr) {
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    return d.toLocaleDateString(undefined, {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
 
-        saveBtn.addEventListener('click', () => {
-            const key = 'lifevault-journal-' + getTodayKey();
-            localStorage.setItem(key, entryEl.value);
-            statusEl.textContent = 'Saved. You can close this tab and come back anytime today.';
-        });
+  function formatTodayLabel() {
+    return formatDateLabel(getTodayKey());
+  }
 
-        clearBtn.addEventListener('click', () => {
-            entryEl.value = '';
-            statusEl.textContent = '';
-        });
+  function loadMoodForDate(dateKey) {
+    const history = JSON.parse(localStorage.getItem('lifevault-journal-history') || '[]');
+    const entry = history.find((e) => e.date === dateKey);
+    const mood = entry ? entry.mood : null;
 
-        loadToday();
-    </script>
+    moodInputs.forEach((input) => {
+      input.checked = input.value === mood;
+    });
+  }
+
+  function getSelectedMood() {
+    let value = null;
+    moodInputs.forEach((input) => {
+      if (input.checked) value = input.value;
+    });
+    return value;
+  }
+
+  function loadEntryForDate(dateKey) {
+    const history = JSON.parse(localStorage.getItem('lifevault-journal-history') || '[]');
+    const entry = history.find((e) => e.date === dateKey);
+    if (entry) {
+      entryEl.value = entry.text || '';
+      loadMoodForDate(dateKey);
+      statusEl.textContent = 'Loaded saved entry.';
+    } else {
+      entryEl.value = '';
+      moodInputs.forEach((i) => (i.checked = false));
+      statusEl.textContent = '';
+    }
+    dateEl.textContent = formatDateLabel(dateKey);
+  }
+
+  function loadToday() {
+    const todayKey = getTodayKey();
+    loadEntryForDate(todayKey);
+  }
+
+  function saveEntryForDate(dateKey) {
+    const text = entryEl.value;
+    const mood = getSelectedMood();
+    const history = JSON.parse(localStorage.getItem('lifevault-journal-history') || '[]');
+
+    const existingIndex = history.findIndex((e) => e.date === dateKey);
+    const record = { date: dateKey, text, mood };
+
+    if (existingIndex >= 0) {
+      history[existingIndex] = record;
+    } else {
+      history.push(record);
+    }
+
+    // Sort newest first
+    history.sort((a, b) => (a.date < b.date ? 1 : -1));
+
+    localStorage.setItem('lifevault-journal-history', JSON.stringify(history));
+    statusEl.textContent = 'Saved. You can come back to this day anytime.';
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('lifevault-journal-history') || '[]');
+    const lastSeven = history.slice(0, 7);
+    historyListEl.innerHTML = '';
+
+    if (lastSeven.length === 0) {
+      historyListEl.textContent = 'No previous entries yet.';
+      return;
+    }
+
+    lastSeven.forEach((item) => {
+      const snippet =
+        (item.text || '').length > 80
+          ? item.text.slice(0, 80).trim() + '…'
+          : (item.text || '');
+      const moodLabel = item.mood ? ` · Mood: ${item.mood}` : '';
+
+      const li = document.createElement('button');
+      li.type = 'button';
+      li.className = 'history-item';
+      li.textContent = `${formatDateLabel(item.date)}${moodLabel} — ${snippet}`;
+      li.addEventListener('click', () => {
+        loadEntryForDate(item.date);
+      });
+      historyListEl.appendChild(li);
+    });
+  }
+
+  saveBtn.addEventListener('click', () => {
+    const key = getTodayKey();
+    saveEntryForDate(key);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    entryEl.value = '';
+    moodInputs.forEach((i) => (i.checked = false));
+    statusEl.textContent = '';
+  });
+
+  // Initial load
+  loadToday();
+  renderHistory();
+</script>
+
 </body>
 </html>
