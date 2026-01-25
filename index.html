@@ -15,7 +15,6 @@
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
       color: #f5f5f5;
       background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0891b2 100%);
-      padding: 2rem 1rem;
     }
 
     h1 {
@@ -32,11 +31,9 @@
 
     .circles-wrapper {
       display: flex;
-      gap: 3rem;
+      gap: 4rem;
       align-items: center;
       margin-bottom: 2rem;
-      flex-wrap: wrap;
-      justify-content: center;
     }
 
     .circle-container {
@@ -57,7 +54,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: bold;
       color: #bfdbfe;
       transition: transform 0.2s, border-color 0.2s;
@@ -89,8 +86,7 @@
       position: relative;
       z-index: 2;
       text-align: center;
-      padding: 15px;
-      line-height: 1.3;
+      padding: 20px;
     }
 
     /* Breathing circle styles */
@@ -131,65 +127,18 @@
       background: radial-gradient(circle, #059669, transparent);
     }
 
-    /* Gratitude circle styles */
-    .gratitude-circle {
-      border-color: #f59e0b;
-      background: rgba(15, 23, 42, 0.5);
-    }
-
-    .gratitude-circle:hover {
-      border-color: #fbbf24;
-    }
-
-    .gratitude-glow {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #f59e0b, transparent);
-      opacity: 0;
-      transition: all 0.4s ease-in-out;
-      z-index: 1;
-    }
-
-    .gratitude-glow.active {
-      opacity: 0.5;
-      width: 180px;
-      height: 180px;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 0.3;
-        transform: translate(-50%, -50%) scale(1);
-      }
-      50% {
-        opacity: 0.6;
-        transform: translate(-50%, -50%) scale(1.1);
-      }
-    }
-
     .instruction {
       margin-top: 2rem;
       font-size: 0.9rem;
       color: #cbd5e1;
       text-align: center;
-      max-width: 700px;
-      line-height: 1.6;
+      max-width: 600px;
     }
 
     @media (max-width: 768px) {
       .circles-wrapper {
         flex-direction: column;
         gap: 2rem;
-      }
-      
-      h1 {
-        font-size: 2rem;
       }
     }
   </style>
@@ -218,22 +167,11 @@
         </div>
       </div>
     </div>
-
-    <!-- Gratitude Circle -->
-    <div class="circle-container" id="gratitudeContainer">
-      <div class="circle gratitude-circle" id="gratitudeCircle">
-        <div class="gratitude-glow" id="gratitudeGlow"></div>
-        <div class="circle-text" id="gratitudeText">
-          Hold for Gratitude
-        </div>
-      </div>
-    </div>
   </div>
 
   <p class="instruction">
-    <strong>Left:</strong> Breathing (30 breaths) • 
-    <strong>Center:</strong> Enter Vault (hold 5s) • 
-    <strong>Right:</strong> Gratitude Prompts (3 random)
+    <strong>Left:</strong> Breathing exercise (20-30 breaths) • 
+    <strong>Right:</strong> Enter Lifevault (hold 5s)
   </p>
 
   <script>
@@ -309,7 +247,7 @@
     let breathingInterval = null;
     let breathCount = 0;
     const MAX_BREATHS = 30;
-    const BREATH_CYCLE_MS = 1000;
+    const BREATH_CYCLE_MS = 1000; // 1 second per full breath (500ms inhale, 500ms exhale)
     const INHALE_MS = 500;
     const EXHALE_MS = 500;
 
@@ -322,6 +260,7 @@
         const elapsed = Date.now() - cycleStart;
 
         if (isInhaling) {
+          // Inhale phase
           breathingVisual.classList.add('inhale');
           breathingVisual.classList.remove('exhale');
           breathingText.textContent = `Inhale\n${breathCount}/${MAX_BREATHS}`;
@@ -331,6 +270,7 @@
             cycleStart = Date.now();
           }
         } else {
+          // Exhale phase
           breathingVisual.classList.add('exhale');
           breathingVisual.classList.remove('inhale');
           breathingText.textContent = `Exhale\n${breathCount}/${MAX_BREATHS}`;
@@ -340,6 +280,7 @@
             cycleStart = Date.now();
             breathCount++;
 
+            // Check if we've completed all breaths
             if (breathCount >= MAX_BREATHS) {
               stopBreathing(true);
             }
@@ -405,54 +346,6 @@
         stopBreathing(false);
       }
     });
-
-    // ==================== GRATITUDE CIRCLE ====================
-    const gratitudeCircle = document.getElementById('gratitudeCircle');
-    const gratitudeGlow = document.getElementById('gratitudeGlow');
-    const gratitudeText = document.getElementById('gratitudeText');
-
-    const gratitudePrompts = [
-      "Name someone who helped you grow",
-      "What challenge taught you something today?",
-      "What small victory did you have?",
-      "What strength did you use today?",
-      "What made you smile recently?",
-      "Who showed you kindness today?",
-      "What part of your body are you grateful for?",
-      "What skill have you developed?",
-      "What comfort do you have that others may not?",
-      "What opportunity came your way?",
-      "What lesson did failure teach you?",
-      "What relationship brings you peace?",
-      "What habit is improving your life?",
-      "What do you love about where you live?",
-      "What technology makes your life easier?",
-      "What food nourished you today?",
-      "What creative expression did you enjoy?",
-      "What wisdom did you gain this week?"
-    ];
-
-    let gratitudeInterval = null;
-    let selectedPrompts = [];
-    let currentPromptIndex = 0;
-    const PROMPTS_TO_SHOW = 3;
-    const PROMPT_DISPLAY_TIME = 3000;
-
-    function getRandomPrompts(count) {
-      const shuffled = [...gratitudePrompts].sort(() => Math.random() - 0.5);
-      return shuffled.slice(0, count);
-    }
-
-    function startGratitude() {
-      selectedPrompts = getRandomPrompts(PROMPTS_TO_SHOW);
-      currentPromptIndex = 0;
-      
-      gratitudeGlow.classList.add('active');
-      
-      function showNextPrompt() {
-        if (currentPromptIndex < selectedPrompts.length) {
-          gratitudeText.textContent = selectedPrompts[currentPromptIndex];
-          currentPromptIndex++;
-        } else {
-          stopGratitude(true);
-        }
+  </script>
+</body>
+</html>
