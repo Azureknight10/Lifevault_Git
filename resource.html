@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lifevault Resource</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0891b2 100%);
+            color: #f5f5ff;
+            min-height: 100vh;
+            padding: 32px 16px 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .shell {
+            width: 100%;
+            max-width: 800px;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #a3a6c2;
+            margin-bottom: 10px;
+            text-decoration: none;
+        }
+        .back-link span:first-child {
+            font-size: 18px;
+            line-height: 0;
+        }
+        .card {
+            background: rgba(10, 11, 16, 0.96);
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid #26293a;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+        }
+        .card h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .meta {
+            font-size: 12px;
+            color: #8e92b0;
+            margin-bottom: 12px;
+        }
+        .card-image,
+        .card-video {
+            width: 100%;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .card-video {
+            aspect-ratio: 16 / 9;
+        }
+        .card p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #d3d5eb;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <a href="resources.html" class="back-link">
+            <span>←</span>
+            <span>Back to Resources</span>
+        </a>
+
+        <div id="resourceContainer"></div>
+    </div>
+
+    <script>
+        const resourcesUrl = "data/resources.json";
+
+        function getIdFromQuery() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("id");
+        }
+
+        function isImageUrl(url) {
+            return url && /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(url);
+        }
+
+        function isYouTubeUrl(url) {
+            return url && /youtube\.com\/watch\?v=|youtu\.be\//i.test(url);
+        }
+
+        function toYouTubeEmbed(url) {
+            if (!url) return "";
+            const shortMatch = url.match(/youtu\.be\/([^?&]+)/i);
+            if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
+            const fullMatch = url.match(/[?&]v=([^&]+)/i);
+            if (fullMatch) return `https://www.youtube.com/embed/${fullMatch[1]}`;
+            return url;
+        }
+
+        async function loadResource() {
+            const id = getIdFromQuery();
+            const container = document.getElementById("resourceContainer");
+
+            if (!id) {
+                container.innerHTML = "<p>Missing resource id.</p>";
+                return;
+            }
+
+            try {
+                const res = await fetch(resourcesUrl);
+                if (!res.ok) throw new Error("Failed to load resources.json");
+                const data = await res.json();
+                const items = Array.isArray(data) ? data : [];
+                const item = items.find((r) => r.id === id);
+
+                if (!item) {
+                    container.innerHTML = "<p>Resource not found.</p>";
+                    return;
+                }
+
+                const safeTitle = item.title || "Untitled";
+                const safeDesc = item.description || "";
+                const date = item.date ? new Date(item.date).toLocaleDateString() : "";
+                const category = item.category || "";
+                const url = item.url || "";
+                const isImage = isImageUrl(url);
+                const isYouTube = isYouTubeUrl(url);
+                const videoEmbedUrl = isYouTube ? toYouTubeEmbed(url) : "";
+
+                container.innerHTML = `
+                    <article class="card">
+                        <h1>${safeTitle}</h1>
+                        <div class="meta">
+                            ${date ? date + " · " : ""}${category}
+                        </div>
+                        ${
+                            isImage
+                                ? `<img src="${url}" alt="${safeTitle}" class="card-image">`
+                                : isYouTube
+                                ? `<iframe
+                                         class="card-video"
+                                         src="${videoEmbedUrl}"
+                                         title="${safeTitle}"
+                                         frameborder="0"
+                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                         allowfullscreen
+                                     ></iframe>`
+                                : url
+                                ? `<p><a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a></p>`
+                                : ""
+                        }
+                        <p>${safeDesc}</p>
+                    </article>
+                `;
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = "<p>Unable to load resource.</p>";
+            }
+        }
+
+        loadResource();
+    </script>
+</body>
+</html>
