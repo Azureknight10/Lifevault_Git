@@ -357,5 +357,24 @@
     gratitudeCircle.addEventListener('touchstart', (e) => { e.preventDefault(); if (!gratitudeInterval) startGratitude(); });
     gratitudeCircle.addEventListener('touchend', () => { if (promptIndex < 3) stopGratitude(false); });
   </script>
+    <button
+    onclick="window.location.href='journal.html'"
+    style="
+      margin-top: 2rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      border: none;
+      background: #fbbf24;
+      color: #111827;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    "
+  >
+    Open Daily Journal
+  </button>
+</body>
+</html>
 </body>
 </html>
