@@ -1,47 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lifevault Resources</title>
-    <style>
-        :root{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#111;background:#f7f7fb}
-        body{margin:0;padding:24px;display:flex;flex-direction:column;gap:20px}
-        header h1{margin:0;font-size:1.5rem}
-        #resources{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-        .card{background:#fff;border:1px solid #e3e7ef;padding:12px;border-radius:8px;box-shadow:0 1px 2px rgba(16,24,40,0.04)}
-        .card h3{margin:0 0 6px;font-size:1rem}
-        .card p{margin:0;font-size:.9rem;color:#475569}
-        .muted{color:#6b7280;font-size:.9rem}
-        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lifevault Resources</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #f5f5f5;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0891b2 100%);
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin: 0 0 0.5rem 0;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+    }
+
+    .tagline {
+      color: #cbd5e1;
+      font-size: 1rem;
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(59, 130, 246, 0.3);
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
+      color: #bfdbfe;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: rgba(59, 130, 246, 0.5);
+      transform: translateX(-4px);
+    }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      padding: 0.75rem 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
+      color: #f5f5f5;
+      font-size: 1rem;
+    }
+
+    .search-box::placeholder {
+      color: #94a3b8;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid #475569;
+      border-radius: 20px;
+      color: #cbd5e1;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+      border-color: #60a5fa;
+      background: rgba(59, 130, 246, 0.2);
+    }
+
+    .filter-btn.active {
+      background: rgba(59, 130, 246, 0.4);
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    #resources {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px solid #334155;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+      border-color: #3b82f6;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
+    }
+
+    .card h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    .card h3 a {
+      color: #bfdbfe;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .card h3 a:hover {
+      color: #60a5fa;
+    }
+
+    .card .description {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      margin: 0.5rem 0;
+      line-height: 1.5;
+    }
+
+    .card .meta {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .category-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(59, 130, 246, 0.3);
+      border-radius: 12px;
+      font-size: 0.75rem;
+      color: #bfdbfe;
+    }
+
+    .no-results {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      padding: 3rem 1rem;
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      #resources {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <a href="index.html" class="back-btn">← Back to Vault</a>
+
     <header>
-        <h1>Resources</h1>
-        <p class="muted">Curated links and notes stored in Lifevault.</p>
+      <h1>Lifevault Resources</h1>
+      <p class="tagline">Your daily growth collection</p>
     </header>
 
-    <main>
-        <p id="status" class="muted">Loading resources…</p>
+    <div class="controls">
+      <input 
+        type="text" 
+        id="searchBox" 
+        class="search-box" 
+        placeholder="Search resources..."
+      />
+      
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="physical-health">Physical Health</button>
+        <button class="filter-btn" data-filter="relationships">Relationships</button>
+        <button class="filter-btn" data-filter="personal-growth">Personal Growth</button>
+        <button class="filter-btn" data-filter="creation">Creation</button>
+        <button class="filter-btn" data-filter="spirituality">Spirituality</button>
+      </div>
+    </div>
 
-        <!-- container where resources.js will render items -->
-        <section id="resources" role="list" aria-live="polite" aria-busy="true"></section>
+    <div id="resources"></div>
+  </div>
 
-        <!-- template used by resources.js -->
-        <template id="resource-template">
-            <article class="card" role="listitem">
-                <h3><a href="#" target="_blank" rel="noopener noreferrer"></a></h3>
-                <p class="description"></p>
-                <p class="muted small meta"></p>
-            </article>
-        </template>
-    </main>
+  <script>
+    let allResources = [];
+    let currentFilter = 'all';
+    let currentSearch = '';
 
-    <noscript>
-        <p class="muted">JavaScript is required to load resources. Please enable JavaScript in your browser.</p>
-    </noscript>
+    // Load resources from JSON
+    fetch('data/resources.json')
+      .then(response => response.json())
+      .then(data => {
+        allResources = data;
+        renderResources();
+      })
+      .catch(err => {
+        document.getElementById('resources').innerHTML = 
+          '<p class="no-results">Error loading resources. Please check that data/resources.json exists.</p>';
+        console.error('Error loading resources:', err);
+      });
 
-    <script src="resources.js" defer></script>
+    function renderResources() {
+      const container = document.getElementById('resources');
+      
+      // Filter resources
+      let filtered = allResources.filter(item => {
+        const matchesFilter = currentFilter === 'all' || 
+          (item.category && item.category.toLowerCase() === currentFilter);
+        
+        const matchesSearch = currentSearch === '' || 
+          item.title.toLowerCase().includes(currentSearch.toLowerCase()) ||
+          (item.description && item.description.toLowerCase().includes(currentSearch.toLowerCase()));
+        
+        return matchesFilter && matchesSearch;
+      });
+
+      // Sort by date (newest first)
+      filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<p class="no-results">No resources found. Try a different search or filter.</p>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => `
+        <article class="card">
+          <h3><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.title}</a></h3>
+          <p class="description">${item.description || ''}</p>
+          <div class="meta">
+            <span>${item.date}</span>
+            ${item.category ? `<span class="category-badge">${item.category}</span>` : ''}
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderResources();
+      });
+    });
+
+    // Search box
+    document.getElementById('searchBox').addEventListener('input', (e) => {
+      currentSearch = e.target.value;
+      renderResources();
+    });
+  </script>
 </body>
 </html>
