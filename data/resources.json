@@ -1,8 +1,10 @@
 [
     {
-        "date": "2026-01-24",
-        "title": "Example Entry",
-        "description": "First Lifevault test link.",
-        "url": "https://example.com"
-    }
+  "title": "Unexpressed Emotion Quote",
+  "description": "Reminder that buried feelings resurface in other ways.",
+  "url": "Images/freud-emotions.jpg",
+  "date": "2026-01-24",
+  "category": "emotions"
+}
+
 ]
