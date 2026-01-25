@@ -383,68 +383,79 @@
 
     return url;
   }
+function trimDescription(text, maxLength = 220) {
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trim() + "…";
+}
 
-  function renderResources() {
-    const filtered = resources
-      .filter((item) => matchesSearch(item, searchTerm))
-      .filter((item) => matchesCategory(item, activeCategory));
+function renderResources() {
+  const filtered = resources
+    .filter((item) => matchesSearch(item, searchTerm))
+    .filter((item) => matchesCategory(item, activeCategory));
 
-    if (!filtered.length) {
-      resourcesGrid.innerHTML = `
-        <div class="empty-state">
-          <strong>No resources match this view.</strong>
-          Try changing the category or clearing the search.
-        </div>
-      `;
-      return;
-    }
-
-    resourcesGrid.innerHTML = filtered
-      .map((item) => {
-        const safeTitle = item.title || "Untitled";
-        const safeDesc = item.description || "";
-        const date = item.date ? new Date(item.date).toLocaleDateString() : "";
-        const category = item.category || "";
-        const hasUrl = Boolean(item.url);
-
-        const isImage = hasUrl && isImageUrl(item.url);
-        const isYouTube = hasUrl && isYouTubeUrl(item.url);
-        const videoEmbedUrl = isYouTube ? toYouTubeEmbed(item.url) : "";
-        const linkable = hasUrl && !isImage && !isYouTube;
-
-        return `
-          <article class="card">
-            ${
-              isImage
-                ? `<img src="${item.url}" alt="${safeTitle}" class="card-image">`
-                : isYouTube
-                ? `<iframe
-                     class="card-video"
-                     src="${videoEmbedUrl}"
-                     title="${safeTitle}"
-                     frameborder="0"
-                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                     allowfullscreen
-                   ></iframe>`
-                : ""
-            }
-            <h3>
-              ${
-                linkable
-                  ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer">${safeTitle}</a>`
-                  : safeTitle
-              }
-            </h3>
-            <p class="description">${safeDesc}</p>
-            <div class="meta">
-              <span>${date}</span>
-              ${category ? `<span class="category-badge">${category}</span>` : ""}
-            </div>
-          </article>
-        `;
-      })
-      .join("");
+  if (!filtered.length) {
+    resourcesGrid.innerHTML = `
+      <div class="empty-state">
+        <strong>No resources match this view.</strong>
+        Try changing the category or clearing the search.
+      </div>
+    `;
+    return;
   }
+
+  resourcesGrid.innerHTML = filtered
+    .map((item) => {
+      const safeTitle = item.title || "Untitled";
+      const safeDesc = item.description || "";
+      const previewDesc = trimDescription(safeDesc);
+      const date = item.date ? new Date(item.date).toLocaleDateString() : "";
+      const category = item.category || "";
+      const hasUrl = Boolean(item.url);
+
+      const isImage = hasUrl && isImageUrl(item.url);
+      const isYouTube = hasUrl && isYouTubeUrl(item.url);
+      const videoEmbedUrl = isYouTube ? toYouTubeEmbed(item.url) : "";
+      const linkable = hasUrl && !isImage && !isYouTube;
+
+      const typeLabel = isYouTube ? "Video" : isImage ? "Quote" : "Link";
+
+      return `
+        <article class="card">
+          ${
+            isImage
+              ? `<img src="${item.url}" alt="${safeTitle}" class="card-image">`
+              : isYouTube
+              ? `<iframe
+                   class="card-video"
+                   src="${videoEmbedUrl}"
+                   title="${safeTitle}"
+                   frameborder="0"
+                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                   allowfullscreen
+                 ></iframe>`
+              : ""
+          }
+          <h3>
+            ${
+              linkable
+                ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer">${safeTitle}</a>`
+                : safeTitle
+            }
+          </h3>
+          <p class="description">${previewDesc}</p>
+          <div class="meta">
+            <span>${date}</span>
+            <span>
+              <span class="category-badge">${typeLabel}</span>
+              ${category ? ` <span class="category-badge">${category}</span>` : ""}
+            </span>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+}
 
   searchInput.addEventListener("input", (e) => {
     searchTerm = e.target.value.trim();
