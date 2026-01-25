@@ -126,10 +126,12 @@
 <textarea id="journalEntry" placeholder="Write freely. This is your space—no judgment, no edits."></textarea>
 
 
-    <div class="buttons">
-        <button class="btn btn-primary" id="saveEntry">Save Today’s Entry</button>
-        <button class="btn btn-secondary" id="clearEntry">Clear</button>
-    </div>
+   <div class="buttons">
+    <button class="btn btn-primary" id="saveEntry">Save Today’s Entry</button>
+    <button class="btn btn-secondary" id="clearEntry">Clear</button>
+    <button class="btn btn-secondary" id="analyzeEntry">Ask AI to analyze</button>
+</div>
+
 
 <div class="status" id="statusMessage"></div>
 
@@ -147,6 +149,8 @@
   const statusEl = document.getElementById('statusMessage');
   const saveBtn = document.getElementById('saveEntry');
   const clearBtn = document.getElementById('clearEntry');
+  const analyzeBtn = document.getElementById('analyzeEntry');
+
 
   // NEW: mood radio buttons (you'll add them in HTML in the next step)
   const moodInputs = document.querySelectorAll('input[name="journalMood"]');
@@ -270,6 +274,24 @@
     moodInputs.forEach((i) => (i.checked = false));
     statusEl.textContent = '';
   });
+analyzeBtn.addEventListener('click', async () => {
+  const text = entryEl.value.trim();
+  if (!text) {
+    statusEl.textContent = 'Write something in the journal first, then ask the AI to analyze it.';
+    return;
+  }
+
+  const mood = getSelectedMood() || 'Unspecified';
+  const payload = `Mood: ${mood}\n\nEntry:\n${text}`;
+
+  try {
+    await navigator.clipboard.writeText(payload);
+    statusEl.textContent = 'Copied to clipboard. Paste this into the Lifevault chatbot and ask for a hypnosis-style analysis.';
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = 'Could not copy to clipboard. Select the text and copy it manually.';
+  }
+});
 
   // Initial load
   loadToday();
