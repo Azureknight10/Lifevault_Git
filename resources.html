@@ -369,8 +369,12 @@
     return url && /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(url);
   }
 
-  function isYouTubeUrl(url) {
-    return url && /youtube\.com\/watch\?v=|youtu\.be\//i.test(url);
+function isYouTubeUrl(url) {
+    return url && /youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\//i.test(url);
+  }
+
+  function isTikTokUrl(url) {
+    return url && /tiktok\.com\/@[\w.-]+\/video\/\d+|vm\.tiktok\.com\/[\w-]+/i.test(url);
   }
 
   function toYouTubeEmbed(url) {
@@ -378,9 +382,19 @@
     const shortMatch = url.match(/youtu\.be\/([^?&]+)/i);
     if (shortMatch) return `https://www.youtube.com/embed/${shortMatch[1]}`;
 
+    const shortsMatch = url.match(/youtube\.com\/shorts\/([^?&]+)/i);
+    if (shortsMatch) return `https://www.youtube.com/embed/${shortsMatch[1]}`;
+
     const fullMatch = url.match(/[?&]v=([^&]+)/i);
     if (fullMatch) return `https://www.youtube.com/embed/${fullMatch[1]}`;
 
+    return url;
+  }
+
+  function toTikTokEmbed(url) {
+    if (!url) return "";
+    const videoMatch = url.match(/\/video\/(\d+)/i);
+    if (videoMatch) return `https://www.tiktok.com/embed/v2/${videoMatch[1]}`;
     return url;
   }
 function trimDescription(text, maxLength = 220) {
