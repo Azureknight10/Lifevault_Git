@@ -163,11 +163,23 @@
       color: var(--muted);
     }
 
-    .resources-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-    }
+   .resources-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .resources-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .resources-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
     .card {
       background: linear-gradient(145deg, rgba(10, 11, 16, 0.98), rgba(10, 11, 16, 0.94));
@@ -182,13 +194,13 @@
     }
 
     .card-image {
-      width: 100%;
-      border-radius: 14px;
-      margin-bottom: 8px;
-      object-fit: cover;
-      max-height: 220px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
+  width: 100%;
+  border-radius: 14px;
+  margin-bottom: 8px;
+  object-fit: cover;
+  max-height: 220px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
 
     .card h3 {
       font-size: 15px;
