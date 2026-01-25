@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lifevault Journal</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: #f9fafb;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f766e 100%);
+        }
+        h1 {
+            margin-bottom: 0.5rem;
+        }
+        .date {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+        }
+        .prompt {
+            max-width: 640px;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            max-width: 640px;
+            min-height: 180px;
+            border-radius: 0.75rem;
+            border: none;
+            padding: 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            resize: vertical;
+        }
+        .buttons {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 0.6rem 1.4rem;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background: #fbbf24;
+            color: #111827;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #e5e7eb;
+            border: 1px solid rgba(148, 163, 184, 0.7);
+        }
+        .status {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #a5b4fc;
+            min-height: 1.2em;
+            text-align: center;
+        }
+        .back-link {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+        .back-link a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Daily Journal</h1>
+    <div class="date" id="journalDate"></div>
+
+    <div class="prompt" id="journalPrompt">
+        Today’s prompt: When you look at your life right now, what is one habit, belief, or pattern you’re ready to shed so you can grow into the person you want to become?
+    </div>
+
+    <textarea id="journalEntry" placeholder="Write freely. This is your space—no judgment, no edits."></textarea>
+
+    <div class="buttons">
+        <button class="btn btn-primary" id="saveEntry">Save Today’s Entry</button>
+        <button class="btn btn-secondary" id="clearEntry">Clear</button>
+    </div>
+
+    <div class="status" id="statusMessage"></div>
+
+    <div class="back-link">
+        <a href="index.html">← Back to Lifevault</a>
+    </div>
+
+    <script>
+        const dateEl = document.getElementById('journalDate');
+        const promptEl = document.getElementById('journalPrompt');
+        const entryEl = document.getElementById('journalEntry');
+        const statusEl = document.getElementById('statusMessage');
+        const saveBtn = document.getElementById('saveEntry');
+        const clearBtn = document.getElementById('clearEntry');
+
+        function getTodayKey() {
+            const d = new Date();
+            return d.toISOString().slice(0, 10); // YYYY-MM-DD
+        }
+
+        function formatTodayLabel() {
+            const d = new Date();
+            return d.toLocaleDateString(undefined, {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function loadToday() {
+            const key = 'lifevault-journal-' + getTodayKey();
+            const saved = localStorage.getItem(key);
+            if (saved) {
+                entryEl.value = saved;
+                statusEl.textContent = 'Loaded your saved entry for today.';
+            } else {
+                entryEl.value = '';
+                statusEl.textContent = '';
+            }
+            dateEl.textContent = formatTodayLabel();
+        }
+
+        saveBtn.addEventListener('click', () => {
+            const key = 'lifevault-journal-' + getTodayKey();
+            localStorage.setItem(key, entryEl.value);
+            statusEl.textContent = 'Saved. You can close this tab and come back anytime today.';
+        });
+
+        clearBtn.addEventListener('click', () => {
+            entryEl.value = '';
+            statusEl.textContent = '';
+        });
+
+        loadToday();
+    </script>
+</body>
+</html>
