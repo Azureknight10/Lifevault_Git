@@ -286,16 +286,19 @@
     }
 
     function stopBreathing(completed = false) {
-      if (breathingInterval) clearInterval(breathingInterval);
-      breathingVisual.classList.remove('inhale', 'exhale');
-      if (completed) {
-        breathingText.textContent = 'Complete!\nRest & Breathe';
-        setTimeout(() => { breathingText.textContent = 'Hold to Breathe'; }, 5000);
-      } else {
-        breathingText.textContent = 'Hold to Breathe';
-      }
-      breathCount = 0;
-    }
+  if (breathingInterval) {
+    clearInterval(breathingInterval);
+    breathingInterval = null;    // <<< reset so it can start again
+  }
+  breathingVisual.classList.remove('inhale', 'exhale');
+  if (completed) {
+    breathingText.textContent = 'Complete!\nRest & Breathe';
+    setTimeout(() => { breathingText.textContent = 'Hold to Breathe'; }, 5000);
+  } else {
+    breathingText.textContent = 'Hold to Breathe';
+  }
+  breathCount = 0;
+}
 
     breathingCircle.addEventListener('mousedown', (e) => { e.preventDefault(); if (!breathingInterval) startBreathing(); });
     breathingCircle.addEventListener('mouseup', () => { if (breathCount < MAX_BREATHS) stopBreathing(false); });
@@ -335,15 +338,18 @@
     }
 
     function stopGratitude(completed = false) {
-      if (gratitudeInterval) clearInterval(gratitudeInterval);
-      gratitudeGlow.classList.remove('active');
-      if (completed) {
-        gratitudeText.textContent = 'Reflect on these...';
-        setTimeout(() => { gratitudeText.textContent = 'Hold for Gratitude'; }, 3000);
-      } else {
-        gratitudeText.textContent = 'Hold for Gratitude';
-      }
-    }
+  if (gratitudeInterval) {
+    clearInterval(gratitudeInterval);
+    gratitudeInterval = null;    // <<< reset so it can start again
+  }
+  gratitudeGlow.classList.remove('active');
+  if (completed) {
+    gratitudeText.textContent = 'Reflect on these...';
+    setTimeout(() => { gratitudeText.textContent = 'Hold for Gratitude'; }, 3000);
+  } else {
+    gratitudeText.textContent = 'Hold for Gratitude';
+  }
+}
 
     gratitudeCircle.addEventListener('mousedown', (e) => { e.preventDefault(); if (!gratitudeInterval) startGratitude(); });
     gratitudeCircle.addEventListener('mouseup', () => { if (promptIndex < 3) stopGratitude(false); });
