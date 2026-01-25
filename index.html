@@ -15,6 +15,7 @@
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
       color: #f5f5f5;
       background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0891b2 100%);
+      padding: 2rem 1rem;
     }
 
     h1 {
@@ -31,9 +32,11 @@
 
     .circles-wrapper {
       display: flex;
-      gap: 4rem;
+      gap: 3rem;
       align-items: center;
       margin-bottom: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .circle-container {
@@ -54,7 +57,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: bold;
       color: #bfdbfe;
       transition: transform 0.2s, border-color 0.2s;
@@ -86,13 +89,12 @@
       position: relative;
       z-index: 2;
       text-align: center;
-      padding: 20px;
+      padding: 15px;
+      line-height: 1.3;
     }
 
-    /* Breathing circle styles */
     .breathing-circle {
       border-color: #10b981;
-      background: rgba(15, 23, 42, 0.5);
     }
 
     .breathing-circle:hover {
@@ -127,18 +129,62 @@
       background: radial-gradient(circle, #059669, transparent);
     }
 
+    .gratitude-circle {
+      border-color: #f59e0b;
+    }
+
+    .gratitude-circle:hover {
+      border-color: #fbbf24;
+    }
+
+    .gratitude-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #f59e0b, transparent);
+      opacity: 0;
+      transition: all 0.4s ease-in-out;
+      z-index: 1;
+    }
+
+    .gratitude-glow.active {
+      opacity: 0.5;
+      width: 180px;
+      height: 180px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        opacity: 0.6;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+    }
+
     .instruction {
       margin-top: 2rem;
       font-size: 0.9rem;
       color: #cbd5e1;
       text-align: center;
-      max-width: 600px;
+      max-width: 700px;
+      line-height: 1.6;
     }
 
     @media (max-width: 768px) {
       .circles-wrapper {
         flex-direction: column;
         gap: 2rem;
+      }
+      h1 {
+        font-size: 2rem;
       }
     }
   </style>
@@ -148,204 +194,162 @@
   <p>Welcome to my daily growth vault.</p>
 
   <div class="circles-wrapper">
-    <!-- Breathing Circle -->
-    <div class="circle-container" id="breathingContainer">
+    <div class="circle-container">
       <div class="circle breathing-circle" id="breathingCircle">
         <div class="breathing-visual" id="breathingVisual"></div>
-        <div class="circle-text" id="breathingText">
-          Hold to Breathe
-        </div>
+        <div class="circle-text" id="breathingText">Hold to Breathe</div>
       </div>
     </div>
 
-    <!-- Entrance Circle -->
-    <div class="circle-container" id="circleContainer">
+    <div class="circle-container">
       <div class="circle" id="circle">
         <div class="water" id="water"></div>
-        <div class="circle-text" id="circleText">
-          Hold to Enter
-        </div>
+        <div class="circle-text" id="circleText">Hold to Enter</div>
+      </div>
+    </div>
+
+    <div class="circle-container">
+      <div class="circle gratitude-circle" id="gratitudeCircle">
+        <div class="gratitude-glow" id="gratitudeGlow"></div>
+        <div class="circle-text" id="gratitudeText">Hold for Gratitude</div>
       </div>
     </div>
   </div>
 
   <p class="instruction">
-    <strong>Left:</strong> Breathing exercise (20-30 breaths) • 
-    <strong>Right:</strong> Enter Lifevault (hold 5s)
+    <strong>Left:</strong> Breathing (30 breaths) • <strong>Center:</strong> Enter Vault (5s) • <strong>Right:</strong> Gratitude (3 prompts)
   </p>
 
   <script>
-    // ==================== ENTRANCE CIRCLE ====================
     const circle = document.getElementById('circle');
     const water = document.getElementById('water');
     const circleText = document.getElementById('circleText');
-    
     let holdTimer = null;
     let fillInterval = null;
-    let startTime = 0;
     const HOLD_DURATION = 5000;
 
     function startFilling() {
-      startTime = Date.now();
-      
+      let startTime = Date.now();
       fillInterval = setInterval(() => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / HOLD_DURATION, 1);
-        const fillHeight = progress * 100;
-        
-        water.style.height = fillHeight + '%';
-        
+        water.style.height = (progress * 100) + '%';
         const secondsLeft = Math.ceil((HOLD_DURATION - elapsed) / 1000);
-        if (secondsLeft > 0) {
-          circleText.textContent = secondsLeft + 's';
-        } else {
-          circleText.textContent = 'Opening...';
-        }
+        circleText.textContent = secondsLeft > 0 ? secondsLeft + 's' : 'Opening...';
       }, 50);
-
-      holdTimer = setTimeout(() => {
-        window.location.href = 'resources.html';
-      }, HOLD_DURATION);
+      holdTimer = setTimeout(() => { window.location.href = 'resources.html'; }, HOLD_DURATION);
     }
 
     function stopFilling() {
-      if (holdTimer) {
-        clearTimeout(holdTimer);
-        holdTimer = null;
-      }
-      
-      if (fillInterval) {
-        clearInterval(fillInterval);
-        fillInterval = null;
-      }
-      
+      if (holdTimer) clearTimeout(holdTimer);
+      if (fillInterval) clearInterval(fillInterval);
       water.style.height = '0%';
       circleText.textContent = 'Hold to Enter';
     }
 
-    circle.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      startFilling();
-    });
-
+    circle.addEventListener('mousedown', (e) => { e.preventDefault(); startFilling(); });
     circle.addEventListener('mouseup', stopFilling);
     circle.addEventListener('mouseleave', stopFilling);
-
-    circle.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      startFilling();
-    });
-
+    circle.addEventListener('touchstart', (e) => { e.preventDefault(); startFilling(); });
     circle.addEventListener('touchend', stopFilling);
-    circle.addEventListener('touchcancel', stopFilling);
 
-    // ==================== BREATHING CIRCLE ====================
     const breathingCircle = document.getElementById('breathingCircle');
     const breathingVisual = document.getElementById('breathingVisual');
     const breathingText = document.getElementById('breathingText');
-
     let breathingInterval = null;
     let breathCount = 0;
     const MAX_BREATHS = 30;
-    const BREATH_CYCLE_MS = 1000; // 1 second per full breath (500ms inhale, 500ms exhale)
-    const INHALE_MS = 500;
-    const EXHALE_MS = 500;
 
     function startBreathing() {
       breathCount = 0;
       let isInhaling = true;
       let cycleStart = Date.now();
-
       breathingInterval = setInterval(() => {
         const elapsed = Date.now() - cycleStart;
-
         if (isInhaling) {
-          // Inhale phase
           breathingVisual.classList.add('inhale');
           breathingVisual.classList.remove('exhale');
           breathingText.textContent = `Inhale\n${breathCount}/${MAX_BREATHS}`;
-
-          if (elapsed >= INHALE_MS) {
-            isInhaling = false;
-            cycleStart = Date.now();
-          }
+          if (elapsed >= 500) { isInhaling = false; cycleStart = Date.now(); }
         } else {
-          // Exhale phase
           breathingVisual.classList.add('exhale');
           breathingVisual.classList.remove('inhale');
           breathingText.textContent = `Exhale\n${breathCount}/${MAX_BREATHS}`;
-
-          if (elapsed >= EXHALE_MS) {
+          if (elapsed >= 500) {
             isInhaling = true;
             cycleStart = Date.now();
             breathCount++;
-
-            // Check if we've completed all breaths
-            if (breathCount >= MAX_BREATHS) {
-              stopBreathing(true);
-            }
+            if (breathCount >= MAX_BREATHS) stopBreathing(true);
           }
         }
       }, 50);
     }
 
     function stopBreathing(completed = false) {
-      if (breathingInterval) {
-        clearInterval(breathingInterval);
-        breathingInterval = null;
-      }
-
+      if (breathingInterval) clearInterval(breathingInterval);
       breathingVisual.classList.remove('inhale', 'exhale');
-      
       if (completed) {
-        breathingText.textContent = `Complete!\nRest & Breathe Normally`;
-        setTimeout(() => {
-          breathingText.textContent = 'Hold to Breathe';
-        }, 5000);
+        breathingText.textContent = 'Complete!\nRest & Breathe';
+        setTimeout(() => { breathingText.textContent = 'Hold to Breathe'; }, 5000);
       } else {
         breathingText.textContent = 'Hold to Breathe';
       }
-      
       breathCount = 0;
     }
 
-    breathingCircle.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      if (!breathingInterval) {
-        startBreathing();
-      }
-    });
+    breathingCircle.addEventListener('mousedown', (e) => { e.preventDefault(); if (!breathingInterval) startBreathing(); });
+    breathingCircle.addEventListener('mouseup', () => { if (breathCount < MAX_BREATHS) stopBreathing(false); });
+    breathingCircle.addEventListener('mouseleave', () => { if (breathCount < MAX_BREATHS) stopBreathing(false); });
+    breathingCircle.addEventListener('touchstart', (e) => { e.preventDefault(); if (!breathingInterval) startBreathing(); });
+    breathingCircle.addEventListener('touchend', () => { if (breathCount < MAX_BREATHS) stopBreathing(false); });
 
-    breathingCircle.addEventListener('mouseup', (e) => {
-      if (breathCount < MAX_BREATHS) {
-        stopBreathing(false);
-      }
-    });
+    const gratitudeCircle = document.getElementById('gratitudeCircle');
+    const gratitudeGlow = document.getElementById('gratitudeGlow');
+    const gratitudeText = document.getElementById('gratitudeText');
+    const prompts = [
+      "Name someone who helped you grow", "What challenge taught you something today?", "What small victory did you have?",
+      "What strength did you use today?", "What made you smile recently?", "Who showed you kindness today?",
+      "What part of your body are you grateful for?", "What skill have you developed?", "What comfort do you have that others may not?",
+      "What opportunity came your way?", "What lesson did failure teach you?", "What relationship brings you peace?",
+      "What habit is improving your life?", "What do you love about where you live?", "What technology makes your life easier?",
+      "What food nourished you today?", "What creative expression did you enjoy?", "What wisdom did you gain this week?"
+    ];
+    let gratitudeInterval = null;
+    let promptIndex = 0;
+    let selectedPrompts = [];
 
-    breathingCircle.addEventListener('mouseleave', (e) => {
-      if (breathCount < MAX_BREATHS) {
-        stopBreathing(false);
-      }
-    });
+    function startGratitude() {
+      selectedPrompts = [...prompts].sort(() => Math.random() - 0.5).slice(0, 3);
+      promptIndex = 0;
+      gratitudeGlow.classList.add('active');
+      gratitudeText.textContent = selectedPrompts[0];
+      promptIndex = 1;
+      gratitudeInterval = setInterval(() => {
+        if (promptIndex < 3) {
+          gratitudeText.textContent = selectedPrompts[promptIndex];
+          promptIndex++;
+        } else {
+          stopGratitude(true);
+        }
+      }, 3000);
+    }
 
-    breathingCircle.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      if (!breathingInterval) {
-        startBreathing();
+    function stopGratitude(completed = false) {
+      if (gratitudeInterval) clearInterval(gratitudeInterval);
+      gratitudeGlow.classList.remove('active');
+      if (completed) {
+        gratitudeText.textContent = 'Reflect on these...';
+        setTimeout(() => { gratitudeText.textContent = 'Hold for Gratitude'; }, 3000);
+      } else {
+        gratitudeText.textContent = 'Hold for Gratitude';
       }
-    });
+    }
 
-    breathingCircle.addEventListener('touchend', (e) => {
-      if (breathCount < MAX_BREATHS) {
-        stopBreathing(false);
-      }
-    });
-
-    breathingCircle.addEventListener('touchcancel', (e) => {
-      if (breathCount < MAX_BREATHS) {
-        stopBreathing(false);
-      }
-    });
+    gratitudeCircle.addEventListener('mousedown', (e) => { e.preventDefault(); if (!gratitudeInterval) startGratitude(); });
+    gratitudeCircle.addEventListener('mouseup', () => { if (promptIndex < 3) stopGratitude(false); });
+    gratitudeCircle.addEventListener('mouseleave', () => { if (promptIndex < 3) stopGratitude(false); });
+    gratitudeCircle.addEventListener('touchstart', (e) => { e.preventDefault(); if (!gratitudeInterval) startGratitude(); });
+    gratitudeCircle.addEventListener('touchend', () => { if (promptIndex < 3) stopGratitude(false); });
   </script>
 </body>
 </html>
