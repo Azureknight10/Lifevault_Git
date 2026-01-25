@@ -1,10 +1,9 @@
 [
-    {
-  "title": "Unexpressed Emotion Quote",
-  "description": "Reminder that buried feelings resurface in other ways.",
-  "url": "Images/freud-emotions.jpg",
-  "date": "2026-01-24",
-  "category": "emotions"
-}
-
+  {
+    "title": "Unexpressed Emotion Quote",
+    "description": "Reminder that buried feelings resurface in other ways.",
+    "url": "Images/freud-emotions.jpg",
+    "date": "2026-01-24",
+    "category": "emotions"
+  }
 ]
