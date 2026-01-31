@@ -59,6 +59,15 @@
                         </table>
                     </div>
                 </div>
+                <div class="card">
+                    <h2>Recent Workouts</h2>
+                    <div class="table-container">
+                        <table id="workoutTable">
+                            <thead><tr><th>Date</th><th>Activity</th><th>Duration</th><th>Intensity</th></tr></thead>
+                            <tbody id="workoutTableBody"><tr><td colspan="4" style="text-align:center; color: var(--text-secondary);">Syncing with Lifevault...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 25px;">
                 <div class="card stat-card">
@@ -79,18 +88,24 @@
     <script>
         async function loadData() {
             try {
-                const res = await fetch('http://localhost:7071/api/getRecentActivity?table=meals&days=7');
-                const json = await res.json(); // Get the wrapper object
-                const data = json.data || [];  // Extract the actual array
+                // 1. Fetch Meals
+                const mealRes = await fetch('http://localhost:7071/api/getRecentActivity?table=meals&days=7');
+                const mealJson = await mealRes.json();
+                const mealData = mealJson.data || [];
 
-                // Update Stat
-                document.getElementById('totalLogs').innerText = data.length;
+                // 2. Fetch Workouts
+                const workoutRes = await fetch('http://localhost:7071/api/getRecentActivity?table=workouts&days=7');
+                const workoutJson = await workoutRes.json();
+                const workoutData = workoutJson.data || [];
 
-                // 1. Populate Table
+                // Update Total Logs Stat
+                document.getElementById('totalLogs').innerText = mealData.length + workoutData.length;
+
+                // 3. Populate Meals Table
                 const tbody = document.getElementById('tableBody');
                 tbody.innerHTML = ''; 
                 
-                data.forEach(item => {
+                mealData.forEach(item => {
                     const time = new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     const typeClass = item.mealType ? item.mealType.toLowerCase() : 'snack';
                     
@@ -103,9 +118,23 @@
                     tbody.innerHTML += row;
                 });
 
-                // 2. Populate Chart
+                // 4. Populate Workouts Table
+                const workoutBody = document.getElementById('workoutTableBody');
+                workoutBody.innerHTML = '';
+                
+                workoutData.forEach(item => {
+                    const row = `<tr>
+                        <td style="font-family: monospace; color: var(--text-secondary);">${item.date}</td>
+                        <td style="font-weight: 500;">${item.type}${item.subtype ? ' - ' + item.subtype : ''}</td>
+                        <td><span class="tag" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">${item.durationMinutes || 0} min</span></td>
+                        <td>${item.effort ? item.effort + '/10' : '-'}</td>
+                    </tr>`;
+                    workoutBody.innerHTML += row;
+                });
+
+                // 5. Populate Meals Chart
                 const counts = {};
-                data.forEach(item => {
+                mealData.forEach(item => {
                     const date = new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' }); 
                     counts[date] = (counts[date] || 0) + 1;
                 });
@@ -150,6 +179,7 @@
             } catch (err) {
                 console.error(err);
                 document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color: #f87171;">Connection Error: Azure Function Offline</td></tr>';
+                document.getElementById('workoutTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color: #f87171;">Connection Error: Azure Function Offline</td></tr>';
             }
         }
 
