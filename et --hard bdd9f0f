@@ -1,0 +1,56 @@
+[33m5c7f7fc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Update video resource JSON
+[33mc424c8a[m Add SiteSpeakAI chatbot widget
+[33mf6f80aa[m Update video resource JSON
+[33m5b9ccc3[m Update video resource JSON
+[33m1b39c3a[m Update video resource JSON
+[33mbdd9f0f[m Update video resource JSON
+[33m52cdcd1[m Update video resource JSON
+[33m1f3b0b4[m Update resource script for video support
+[33m7789dfe[m Update video resource JSON
+[33mb659f9e[m Update video resource JSON
+[33m67288d5[m Update video resource JSON
+[33ma39cbc3[m Update video resource JSON
+[33mc924785[m Update video resource JSON
+[33m5f794f0[m Update video resource JSON
+[33ma33117e[m Add 100 men
+[33m53718fe[m Wire up resource detail page with ids
+[33mf336a31[m Add resource detail page and link cards by id
+[33mb4f710f[m Link cards to resource detail page
+[33mc3bbc06[m Trim long descriptions and add type badges
+[33mc91a80e[m Add dangerous man video resource
+[33m8244386[m Embed YouTube videos in resource cards
+[33m9becb1c[m Add dangerous man video resource
+[33mfd36304[m Adjust resource card grid and image size
+[33m09e7d9f[m Wrap resources JSON in array
+[33mf4f3385[m Merge branch 'main' of https://github.com/Azureknight10/Lifevault_Git
+[33m57ab8b8[m Add unresolved emotions resource
+[33mc654296[m Delete Images/freud-emotions.jpg.avif
+[33m35c65b6[m Add new resources image
+[33mc273564[m Match resources page background to index
+[33m6d0632e[m Merge branch 'main' of https://github.com/Azureknight10/Lifevault_Git
+[33md305ded[m Polish resources page styling and UX
+[33m88fd514[m Remove unexpressed emotion quote from resources
+[33me8859e4[m Wire up Freud emotions image
+[33m825bc2a[m Revamp resources page UI
+[33m946537f[m Add emotions image resource
+[33mf05f64a[m Add emotions image
+[33me298a74[m Add finance category button
+[33mc4edae0[m Add career category button
+[33m563f62b[m Add 'Emotions' filter button to resources
+[33m83fe8c3[m Add emotions button
+[33md6b0733[m Add Lifevault site files
+[33m4e314f4[m Initial commit - Lifevault
+[33m45dbb9b[m Add interactive water-fill circle entrance
+[33mb60f798[m Add interactive water-fill circle entrance
+[33m2298ed1[m Add interactive water-fill circle entrance
+[33m094584c[m Add interactive water-fill circle entrance
+[33mc9d5c5c[m Add interactive water-fill circle entrance
+[33m567e9e0[m Add interactive water-fill circle entrance
+[33m109f258[m Add interactive water-fill circle entrance
+[33m5e58c5c[m Add interactive water-fill circle entrance
+[33m7f3532c[m Add interactive water-fill circle entrance
+[33m8c17239[m Add interactive water-fill circle entrance
+[33mb9eb910[m Add interactive water-fill circle entrance
+[33ma72a109[m Fix resources page name
+[33m354c712[m Initial Lifevault static site structure
+[33m6d1f0d0[m Initial commit

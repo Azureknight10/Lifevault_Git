@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Lifevault Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; }
+        h1, h2 { margin-bottom: 0.5rem; }
+        form { border: 1px solid #ccc; padding: 16px; margin-bottom: 24px; border-radius: 8px; }
+        label { display: block; margin-top: 8px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 6px; margin-top: 4px; box-sizing: border-box; }
+        button { margin-top: 12px; padding: 8px 16px; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    </style>
+</head>
+<body>
+    <h1>Lifevault Tracker</h1>
+
+    <!-- Workout Form -->
+    <h2>Log Workout</h2>
+    <form id="workout-form">
+        <div class="two-column">
+            <div>
+                <label for="workout-date">Date</label>
+                <input type="date" id="workout-date" name="date" />
+            </div>
+            <div>
+                <label for="workout-time">Time</label>
+                <input type="time" id="workout-time" name="time" />
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div>
+                <label for="workout-type">Type</label>
+                <select id="workout-type" name="type">
+                    <option value="strength">Strength</option>
+                    <option value="yoga">Yoga</option>
+                    <option value="cardio">Cardio</option>
+                    <option value="walk">Walk</option>
+                    <option value="mobility">Mobility</option>
+                </select>
+            </div>
+            <div>
+                <label for="workout-subtype">Subtype</label>
+                <input type="text" id="workout-subtype" name="subtype" placeholder="upper body, legs, vinyasa, cycle..." />
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div>
+                <label for="workout-duration">Duration (minutes)</label>
+                <input type="number" id="workout-duration" name="durationMinutes" min="0" />
+            </div>
+            <div>
+                <label for="workout-effort">Effort (1–10)</label>
+                <input type="number" id="workout-effort" name="effort" min="1" max="10" />
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div>
+                <label for="workout-location">Location</label>
+                <input type="text" id="workout-location" name="location" placeholder="ACAC gym, home, outside..." />
+            </div>
+            <div>
+                <label for="workout-mood-before">Mood Before</label>
+                <input type="text" id="workout-mood-before" name="moodBefore" placeholder="tired, anxious, neutral..." />
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div>
+                <label for="workout-mood-after">Mood After</label>
+                <input type="text" id="workout-mood-after" name="moodAfter" placeholder="energized, calm, etc." />
+            </div>
+        </div>
+
+        <label for="workout-notes">Notes</label>
+        <textarea id="workout-notes" name="notes" rows="3" placeholder="Bench + rows. Felt better after..."></textarea>
+
+        <button type="submit">Save Workout (log only for now)</button>
+    </form>
+
+    <!-- Meal Form -->
+    <h2>Log Meal</h2>
+    <form id="meal-form">
+        <div class="two-column">
+            <div>
+                <label for="meal-date">Date</label>
+                <input type="date" id="meal-date" name="date" />
+            </div>
+            <div>
+                <label for="meal-time">Time</label>
+                <input type="time" id="meal-time" name="time" />
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div>
+                <label for="meal-type">Meal Type</label>
+                <select id="meal-type" name="mealType">
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="snack">Snack</option>
+                </select>
+            </div>
+            <div>
+                <label for="meal-description">Description</label>
+                <input type="text" id="meal-description" name="description" placeholder="Chicken, rice, broccoli..." />
+            </div>
+        </div>
+
+        <label for="meal-tags">Tags (comma separated)</label>
+        <input type="text" id="meal-tags" name="tags" placeholder="high_protein, post_workout" />
+
+        <div class="two-column">
+            <div>
+                <label for="meal-energy-after">Energy After</label>
+                <select id="meal-energy-after" name="energyAfter">
+                    <option value="low">Low</option>
+                    <option value="ok">Ok</option>
+                    <option value="good">Good</option>
+                    <option value="wired">Wired</option>
+                </select>
+            </div>
+            <div>
+                <label for="meal-mood-after">Mood After</label>
+                <input type="text" id="meal-mood-after" name="moodAfter" placeholder="calm, focused, sluggish..." />
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div>
+                <label for="meal-goal-support">Goal Support</label>
+                <select id="meal-goal-support" name="goalSupport">
+                    <option value="muscle_gain">Muscle gain</option>
+                    <option value="fat_loss">Fat loss</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="performance">Performance</option>
+                    <option value="none">None</option>
+                </select>
+            </div>
+        </div>
+
+        <label for="meal-notes">Notes</label>
+        <textarea id="meal-notes" name="notes" rows="3" placeholder="No crash, felt focused..."></textarea>
+
+        <button type="submit">Save Meal (log only for now)</button>
+    </form>
+
+    <script>
+        function generateId(prefix) {
+            const now = new Date();
+            const ts = now.getTime().toString(36);
+            return prefix + "-" + ts;
+        }
+
+        function getTodayISO() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        // Set default dates to today
+        document.addEventListener("DOMContentLoaded", () => {
+            const today = getTodayISO();
+            const workoutDateInput = document.getElementById("workout-date");
+            const mealDateInput = document.getElementById("meal-date");
+            if (workoutDateInput) workoutDateInput.value = today;
+            if (mealDateInput) mealDateInput.value = today;
+        });
+
+        // Workout form handler
+        document.getElementById("workout-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const form = e.target;
+
+            const entry = {
+                id: generateId("w"),
+                date: form.date.value,
+                time: form.time.value,
+                type: form.type.value,
+                subtype: form.subtype.value,
+                durationMinutes: form.durationMinutes.value ? parseInt(form.durationMinutes.value, 10) : null,
+                effort: form.effort.value ? parseInt(form.effort.value, 10) : null,
+                location: form.location.value,
+                moodBefore: form.moodBefore.value,
+                moodAfter: form.moodAfter.value,
+                notes: form.notes.value
+            };
+
+            console.log("Workout entry JSON:", entry);
+
+            fetch("http://localhost:7071/api/logWorkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(entry)
+            })
+                .then(async (res) => {
+                    const data = await res.json().catch(() => null);
+                    console.log("Workout function response:", res.status, data);
+                    if (res.ok) {
+                        alert("Workout sent to backend successfully (stored in Azure).");
+                    } else {
+                        alert("Backend error logging workout. Check console.");
+                    }
+                })
+                .catch((err) => {
+                    console.error("Error calling workout backend:", err);
+                    alert("Failed to reach workout backend. Is the function running?");
+                });
+
+            form.reset();
+            form.date.value = getTodayISO();
+        });
+
+        // Meal form handler
+        document.getElementById("meal-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const form = e.target;
+
+            const tagsRaw = form.tags.value || "";
+            const tags = tagsRaw
+                .split(",")
+                .map(t => t.trim())
+                .filter(t => t.length > 0);
+
+            const entry = {
+                id: generateId("m"),
+                date: form.date.value,
+                time: form.time.value,
+                mealType: form.mealType.value,
+                description: form.description.value,
+                tags: tags,
+                energyAfter: form.energyAfter.value,
+                moodAfter: form.moodAfter.value,
+                goalSupport: form.goalSupport.value,
+                notes: form.notes.value
+            };
+
+            console.log("Meal entry JSON:", entry);
+
+            fetch("http://localhost:7071/api/logMeal", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(entry)
+            })
+                .then(async (res) => {
+                    const data = await res.json().catch(() => null);
+                    console.log("Meal function response:", res.status, data);
+                    if (res.ok) {
+                        alert("Meal sent to backend successfully (stored in Azure).");
+                    } else {
+                        alert("Backend error logging meal. Check console.");
+                    }
+                })
+                .catch((err) => {
+                    console.error("Error calling meal backend:", err);
+                    alert("Failed to reach meal backend. Is the function running?");
+                });
+
+            form.reset();
+            form.date.value = getTodayISO();
+        });
+    </script>
+</body>
+</html>
