@@ -584,43 +584,6 @@ document.getElementById('speakBtn').addEventListener('click', async () => {
         statusBtn.disabled = false;
     }
 });
-    <script>
-  (function addDashboardButton() {
-    // 1. Find the container where other buttons live
-    // (We look for the .buttons class or the first navigation area)
-    const buttonContainer = document.querySelector('.buttons') || document.querySelector('nav') || document.body;
-
-    // 2. Create the new button
-    const dashboardBtn = document.createElement('a');
-    dashboardBtn.href = 'public/dashboard.html'; // Path to your dashboard
-    dashboardBtn.innerText = 'Vault Dashboard';
-    
-    // 3. Add styles to match your theme (Glassmorphism / Blue)
-    dashboardBtn.style.display = 'inline-block';
-    dashboardBtn.style.margin = '10px';
-    dashboardBtn.style.padding = '10px 20px';
-    dashboardBtn.style.background = 'rgba(59, 130, 246, 0.8)'; // Blueish
-    dashboardBtn.style.color = 'white';
-    dashboardBtn.style.textDecoration = 'none';
-    dashboardBtn.style.borderRadius = '8px';
-    dashboardBtn.style.fontWeight = 'bold';
-    dashboardBtn.style.border = '1px solid rgba(255, 255, 255, 0.2)';
-    dashboardBtn.style.backdropFilter = 'blur(5px)';
-    dashboardBtn.style.transition = 'transform 0.2s, background 0.2s';
-
-    // Hover effect
-    dashboardBtn.onmouseover = () => {
-        dashboardBtn.style.transform = 'scale(1.05)';
-        dashboardBtn.style.background = 'rgba(59, 130, 246, 1)';
-    };
-    dashboardBtn.onmouseout = () => {
-        dashboardBtn.style.transform = 'scale(1)';
-        dashboardBtn.style.background = 'rgba(59, 130, 246, 0.8)';
-    };
-
-    // 4. Insert it into the page
-    buttonContainer.appendChild(dashboardBtn);
-  })();
 </script>
 
 </body>
