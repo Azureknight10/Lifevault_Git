@@ -266,26 +266,20 @@
         </div>
     </div>
     <script>
-        // ******************************************************
-        // CONFIGURATION: Replace with your actual Azure URL
-        // Example: 'https://lifevault-shane-api.azurewebsites.net/api'
-        // ******************************************************
-        const API_BASE = 'https://lifevault-api.azurewebsites.net/api'; 
-        
         async function loadData() {
             try {
                 // 1. Fetch Meals
-                const mealRes = await fetch(`${API_BASE}/getRecentActivity?table=meals&days=7`);
+                const mealRes = await fetch('http://localhost:7071/api/getRecentActivity?table=meals&days=7');
                 const mealJson = await mealRes.json();
                 const mealData = mealJson.data || [];
 
                 // 2. Fetch Workouts
-                const workoutRes = await fetch(`${API_BASE}/getRecentActivity?table=workouts&days=7`);
+                const workoutRes = await fetch('http://localhost:7071/api/getRecentActivity?table=workouts&days=7');
                 const workoutJson = await workoutRes.json();
                 const workoutData = workoutJson.data || [];
 
                 // 3. Fetch Knowledge
-                const knowRes = await fetch(`${API_BASE}/getRecentActivity?table=knowledge`);
+                const knowRes = await fetch('http://localhost:7071/api/getRecentActivity?table=knowledge');
                 const knowJson = await knowRes.json();
                 const knowData = knowJson.data || [];
 
@@ -433,7 +427,7 @@
             logStatus.textContent = '';
 
             try {
-                const res = await fetch(`${API_BASE}/logmeal`, {
+                const res = await fetch('http://localhost:7071/api/logmeal', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -479,7 +473,7 @@
             workoutStatus.textContent = '';
 
             try {
-                const res = await fetch(`${API_BASE}/logWorkout`, {
+                const res = await fetch('http://localhost:7071/api/logWorkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -518,7 +512,7 @@
             knowledgeStatus.textContent = '';
 
             try {
-                const res = await fetch(`${API_BASE}/logKnowledge`, {
+                const res = await fetch('http://localhost:7071/api/logKnowledge', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -544,50 +538,53 @@
         });
 
        // --- NEW VOICE HANDLER (Connected to Chat Agent) ---
-        document.getElementById('speakBtn').addEventListener('click', async () => {
-            const text = document.getElementById('voiceInput').value.trim();
-            if (!text) {
-                alert('Please enter text to speak');
-                return;
-            }
+document.getElementById('speakBtn').addEventListener('click', async () => {
+    const text = document.getElementById('voiceInput').value.trim();
+    if (!text) {
+        alert('Please enter text to speak');
+        return;
+    }
 
-            const statusBtn = document.getElementById('speakBtn');
-            statusBtn.textContent = "Thinking...";
-            statusBtn.disabled = true;
+    const statusBtn = document.getElementById('speakBtn');
+    statusBtn.textContent = "Thinking...";
+    statusBtn.disabled = true;
 
-            try {
-                const res = await fetch(`${API_BASE}/chat_agent`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question: text }) 
-                });
-
-                if (!res.ok) {
-                    throw new Error(`Agent error: ${res.statusText}`);
-                }
-
-                // Get the audio blob (agent response voice)
-                const audioBlob = await res.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
-                
-                statusBtn.textContent = "Speaking...";
-                
-                audio.onended = () => {
-                    URL.revokeObjectURL(audioUrl);
-                    statusBtn.textContent = "Speak";
-                    statusBtn.disabled = false;
-                };
-                
-                audio.play();
-
-            } catch (err) {
-                console.error('Voice error:', err);
-                alert('Agent failed: ' + err.message);
-                statusBtn.textContent = "Speak";
-                statusBtn.disabled = false;
-            }
+    try {
+        // CHANGED: Point to chat_agent instead of speak_lesson
+        // CHANGED: Send { question: text } instead of { text: text }
+        const res = await fetch('http://localhost:7071/api/chat_agent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: text }) 
         });
-    </script>
+
+        if (!res.ok) {
+            throw new Error(`Agent error: ${res.statusText}`);
+        }
+
+        // Get the audio blob (agent response voice)
+        const audioBlob = await res.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        statusBtn.textContent = "Speaking...";
+        
+        audio.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+            statusBtn.textContent = "Speak";
+            statusBtn.disabled = false;
+        };
+        
+        audio.play();
+
+    } catch (err) {
+        console.error('Voice error:', err);
+        alert('Agent failed: ' + err.message);
+        statusBtn.textContent = "Speak";
+        statusBtn.disabled = false;
+    }
+});
+</script>
+
 </body>
 </html>
