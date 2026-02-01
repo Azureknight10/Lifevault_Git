@@ -36,10 +36,179 @@
         .stat-card { background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%); border: 1px solid rgba(139, 92, 246, 0.3); text-align: center; padding: 30px; }
         .stat-value { font-size: 3rem; font-weight: 700; margin: 10px 0; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .stat-label { color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .form-field { display: flex; flex-direction: column; gap: 6px; }
+        .form-field label { font-size: 0.85rem; color: var(--text-secondary); }
+        .form-control {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        .form-control:focus { outline: 1px solid var(--accent-color); }
+        .form-span-2 { grid-column: span 2; }
+        .primary-btn {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .quick-forms { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 900px) { .quick-forms { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (min-width: 1200px) { .quick-forms { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .compact-card { padding: 18px; }
+        .compact-card h2 { margin-bottom: 14px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="quick-forms">
+        <div class="card compact-card">
+            <h2>Log Meal</h2>
+            <form id="mealForm" class="form-grid">
+                <div class="form-field">
+                    <label for="mealDate">Date</label>
+                    <input type="date" id="mealDate" class="form-control" required>
+                </div>
+                <div class="form-field">
+                    <label for="mealTime">Time</label>
+                    <input type="time" id="mealTime" class="form-control" required>
+                </div>
+                <div class="form-field">
+                    <label for="mealType">Type</label>
+                    <select id="mealType" class="form-control" required>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Snack">Snack</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="mealCalories">Calories</label>
+                    <input type="number" id="mealCalories" class="form-control" min="0" step="1" placeholder="0">
+                </div>
+                <div class="form-field form-span-2">
+                    <label for="mealDescription">Description</label>
+                    <input type="text" id="mealDescription" class="form-control" placeholder="What did you eat?" required>
+                </div>
+                <div class="form-field">
+                    <label for="mealTags">Tags</label>
+                    <input type="text" id="mealTags" class="form-control" placeholder="e.g. protein, homemade">
+                </div>
+                <div class="form-field">
+                    <label for="energyAfter">Energy After</label>
+                    <select id="energyAfter" class="form-control">
+                        <option value="High">High</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Low">Low</option>
+                        <option value="Crash">Crash</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="moodAfter">Mood After</label>
+                    <select id="moodAfter" class="form-control">
+                        <option value="Great">Great</option>
+                        <option value="Good" selected>Good</option>
+                        <option value="Neutral">Neutral</option>
+                        <option value="Bad">Bad</option>
+                    </select>
+                </div>
+                <div class="form-field form-span-2">
+                    <label for="mealNotes">Notes</label>
+                    <textarea id="mealNotes" class="form-control" rows="3" placeholder="Any additional notes..."></textarea>
+                </div>
+                <div class="form-field form-span-2">
+                    <button type="submit" class="primary-btn">Log</button>
+                </div>
+            </form>
+            <p id="logStatus" style="margin-top: 10px; font-size: 0.9em;"></p>
+        </div>
+        <div class="card compact-card">
+            <h2>Log Workout</h2>
+            <form id="workoutForm" class="form-grid">
+                <div class="form-field">
+                    <label for="workoutDate">Date</label>
+                    <input type="date" id="workoutDate" class="form-control" required>
+                </div>
+                <div class="form-field">
+                    <label for="workoutTime">Time</label>
+                    <input type="time" id="workoutTime" class="form-control" required>
+                </div>
+                <div class="form-field">
+                    <label for="workoutType">Type</label>
+                    <select id="workoutType" class="form-control" required>
+                        <option value="strength">Strength</option>
+                        <option value="yoga">Yoga</option>
+                        <option value="cardio">Cardio</option>
+                        <option value="walk">Walk</option>
+                        <option value="mobility">Mobility</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="workoutSubtype">Subtype</label>
+                    <input type="text" id="workoutSubtype" class="form-control" placeholder="upper body, vinyasa, cycle...">
+                </div>
+                <div class="form-field">
+                    <label for="workoutDuration">Duration (minutes)</label>
+                    <input type="number" id="workoutDuration" class="form-control" min="0" step="1" placeholder="0">
+                </div>
+                <div class="form-field">
+                    <label for="workoutEffort">Effort (1–10)</label>
+                    <input type="number" id="workoutEffort" class="form-control" min="1" max="10" step="1" placeholder="5">
+                </div>
+                <div class="form-field">
+                    <label for="workoutLocation">Location</label>
+                    <input type="text" id="workoutLocation" class="form-control" placeholder="gym, home, outside...">
+                </div>
+                <div class="form-field">
+                    <label for="workoutMoodBefore">Mood Before</label>
+                    <input type="text" id="workoutMoodBefore" class="form-control" placeholder="tired, anxious, neutral...">
+                </div>
+                <div class="form-field">
+                    <label for="workoutMoodAfter">Mood After</label>
+                    <input type="text" id="workoutMoodAfter" class="form-control" placeholder="energized, calm, etc.">
+                </div>
+                <div class="form-field form-span-2">
+                    <label for="workoutNotes">Notes</label>
+                    <textarea id="workoutNotes" class="form-control" rows="3" placeholder="Bench + rows. Felt better after..."></textarea>
+                </div>
+                <div class="form-field form-span-2">
+                    <button type="submit" class="primary-btn">Log Workout</button>
+                </div>
+            </form>
+            <p id="workoutStatus" style="margin-top: 10px; font-size: 0.9em;"></p>
+        </div>
+        <div class="card compact-card">
+            <h2>Knowledge Base</h2>
+            <form id="knowledgeForm" class="form-grid">
+                <div class="form-field">
+                    <label for="knowledgeSource">Source</label>
+                    <input type="text" id="knowledgeSource" class="form-control" placeholder="Book, article, podcast...">
+                </div>
+                <div class="form-field">
+                    <label for="knowledgeCategory">Category</label>
+                    <input type="text" id="knowledgeCategory" class="form-control" placeholder="Finance, Health, Mindset...">
+                </div>
+                <div class="form-field form-span-2">
+                    <label for="knowledgeContent">Content</label>
+                    <textarea id="knowledgeContent" class="form-control" rows="3" placeholder="Key idea or quote..." required></textarea>
+                </div>
+                <div class="form-field form-span-2">
+                    <button type="submit" class="primary-btn">Save Knowledge</button>
+                </div>
+            </form>
+            <p id="knowledgeStatus" style="margin-top: 10px; font-size: 0.9em;"></p>
+        </div>
+        </div>
+
         <header>
             <h1>Lifevault</h1>
             <div class="subtitle">Personal Intelligence Dashboard</div>
@@ -87,6 +256,11 @@
                     <div id="knowledgeList" style="max-height: 400px; overflow-y: auto;">
                         <div style="text-align:center; color: var(--text-secondary); padding: 20px;">Loading wisdom...</div>
                     </div>
+                </div>
+                <div class="card">
+                    <h2>Voice Assistant</h2>
+                    <input type="text" id="voiceInput" placeholder="Type something to hear..." style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: var(--text-primary); font-size: 0.95rem;">
+                    <button id="speakBtn" style="width: 100%; padding: 10px; border-radius: 8px; border: none; background: linear-gradient(to right, #818cf8, #c084fc); color: white; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">Speak</button>
                 </div>
             </div>
         </div>
@@ -209,6 +383,207 @@
         }
 
         loadData();
+
+        const mealForm = document.getElementById('mealForm');
+        const mealDate = document.getElementById('mealDate');
+        const mealTime = document.getElementById('mealTime');
+        const logStatus = document.getElementById('logStatus');
+
+        const workoutForm = document.getElementById('workoutForm');
+        const workoutDate = document.getElementById('workoutDate');
+        const workoutTime = document.getElementById('workoutTime');
+        const workoutStatus = document.getElementById('workoutStatus');
+        const knowledgeForm = document.getElementById('knowledgeForm');
+        const knowledgeStatus = document.getElementById('knowledgeStatus');
+
+        const now = new Date();
+        mealDate.value = now.toISOString().split('T')[0];
+        mealTime.value = now.toTimeString().slice(0, 5);
+        workoutDate.value = now.toISOString().split('T')[0];
+        workoutTime.value = now.toTimeString().slice(0, 5);
+
+        mealForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const payload = {
+                date: mealDate.value,
+                time: mealTime.value,
+                mealType: document.getElementById('mealType').value,
+                description: document.getElementById('mealDescription').value.trim(),
+                item: document.getElementById('mealDescription').value.trim(),
+                calories: Number(document.getElementById('mealCalories').value) || 0,
+                tags: document.getElementById('mealTags').value
+                    .split(',')
+                    .map((tag) => tag.trim())
+                    .filter((tag) => tag.length > 0),
+                energyAfter: document.getElementById('energyAfter').value,
+                moodAfter: document.getElementById('moodAfter').value,
+                notes: document.getElementById('mealNotes').value.trim()
+            };
+
+            const submitBtn = mealForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Logging...';
+            logStatus.textContent = '';
+
+            try {
+                const res = await fetch('http://localhost:7071/api/logmeal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText || 'Failed to log meal');
+                }
+
+                logStatus.style.color = '#34d399';
+                logStatus.textContent = 'Meal logged successfully.';
+                await loadData();
+            } catch (err) {
+                console.error('Log meal error:', err);
+                logStatus.style.color = '#f87171';
+                logStatus.textContent = err.message || 'Failed to log meal.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Log';
+            }
+        });
+
+        workoutForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const payload = {
+                date: workoutDate.value,
+                time: workoutTime.value,
+                type: document.getElementById('workoutType').value,
+                subtype: document.getElementById('workoutSubtype').value.trim(),
+                durationMinutes: Number(document.getElementById('workoutDuration').value) || 0,
+                effort: Number(document.getElementById('workoutEffort').value) || null,
+                location: document.getElementById('workoutLocation').value.trim(),
+                moodBefore: document.getElementById('workoutMoodBefore').value.trim(),
+                moodAfter: document.getElementById('workoutMoodAfter').value.trim(),
+                notes: document.getElementById('workoutNotes').value.trim()
+            };
+
+            const submitBtn = workoutForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Logging...';
+            workoutStatus.textContent = '';
+
+            try {
+                const res = await fetch('http://localhost:7071/api/logWorkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText || 'Failed to log workout');
+                }
+
+                workoutStatus.style.color = '#34d399';
+                workoutStatus.textContent = 'Workout logged successfully.';
+                await loadData();
+            } catch (err) {
+                console.error('Log workout error:', err);
+                workoutStatus.style.color = '#f87171';
+                workoutStatus.textContent = err.message || 'Failed to log workout.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Log Workout';
+            }
+        });
+
+        knowledgeForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const payload = {
+                source: document.getElementById('knowledgeSource').value.trim(),
+                partitionKey: document.getElementById('knowledgeCategory').value.trim(),
+                content: document.getElementById('knowledgeContent').value.trim()
+            };
+
+            const submitBtn = knowledgeForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            knowledgeStatus.textContent = '';
+
+            try {
+                const res = await fetch('http://localhost:7071/api/logKnowledge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(errorText || 'Failed to save knowledge');
+                }
+
+                knowledgeStatus.style.color = '#34d399';
+                knowledgeStatus.textContent = 'Knowledge saved successfully.';
+                document.getElementById('knowledgeContent').value = '';
+                await loadData();
+            } catch (err) {
+                console.error('Knowledge error:', err);
+                knowledgeStatus.style.color = '#f87171';
+                knowledgeStatus.textContent = err.message || 'Failed to save knowledge.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Knowledge';
+            }
+        });
+
+       // --- NEW VOICE HANDLER (Connected to Chat Agent) ---
+document.getElementById('speakBtn').addEventListener('click', async () => {
+    const text = document.getElementById('voiceInput').value.trim();
+    if (!text) {
+        alert('Please enter text to speak');
+        return;
+    }
+
+    const statusBtn = document.getElementById('speakBtn');
+    statusBtn.textContent = "Thinking...";
+    statusBtn.disabled = true;
+
+    try {
+        // CHANGED: Point to chat_agent instead of speak_lesson
+        // CHANGED: Send { question: text } instead of { text: text }
+        const res = await fetch('http://localhost:7071/api/chat_agent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: text }) 
+        });
+
+        if (!res.ok) {
+            throw new Error(`Agent error: ${res.statusText}`);
+        }
+
+        // Get the audio blob (agent response voice)
+        const audioBlob = await res.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        
+        statusBtn.textContent = "Speaking...";
+        
+        audio.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+            statusBtn.textContent = "Speak";
+            statusBtn.disabled = false;
+        };
+        
+        audio.play();
+
+    } catch (err) {
+        console.error('Voice error:', err);
+        alert('Agent failed: ' + err.message);
+        statusBtn.textContent = "Speak";
+        statusBtn.disabled = false;
+    }
+});
     </script>
 </body>
 </html>
