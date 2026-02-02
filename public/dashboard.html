@@ -266,324 +266,331 @@
         </div>
     </div>
     <script>
-        async function loadData() {
-            try {
-                // 1. Fetch Meals
-                const mealRes = await fetch('http://localhost:7071/api/getRecentActivity?table=meals&days=7');
-                const mealJson = await mealRes.json();
-                const mealData = mealJson.data || [];
+    async function loadData() {
+        try {
+            // 1. Fetch Meals
+            const mealRes = await fetch('http://localhost:7071/api/getRecentActivity?table=meals&days=7');
+            const mealJson = await mealRes.json();
+            const mealData = mealJson.data || [];
 
-                // 2. Fetch Workouts
-                const workoutRes = await fetch('http://localhost:7071/api/getRecentActivity?table=workouts&days=7');
-                const workoutJson = await workoutRes.json();
-                const workoutData = workoutJson.data || [];
+            // 2. Fetch Workouts
+            const workoutRes = await fetch('http://localhost:7071/api/getRecentActivity?table=workouts&days=7');
+            const workoutJson = await workoutRes.json();
+            const workoutData = workoutJson.data || [];
 
-                // 3. Fetch Knowledge
-                const knowRes = await fetch('http://localhost:7071/api/getRecentActivity?table=knowledge');
-                const knowJson = await knowRes.json();
-                const knowData = knowJson.data || [];
+            // 3. Fetch Knowledge
+            const knowRes = await fetch('http://localhost:7071/api/getRecentActivity?table=knowledge');
+            const knowJson = await knowRes.json();
+            const knowData = knowJson.data || [];
+console.log("DEBUG knowData:", JSON.stringify(knowData, null, 2)); 
+            // Update Total Logs Stat
+            document.getElementById('totalLogs').innerText = mealData.length + workoutData.length;
 
-                // Update Total Logs Stat
-                document.getElementById('totalLogs').innerText = mealData.length + workoutData.length;
-
-                // 4. Populate Meals Table
-                const tbody = document.getElementById('tableBody');
-                tbody.innerHTML = ''; 
+            // 4. Populate Meals Table
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = ''; 
+            
+            mealData.forEach(item => {
+                const time = new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const typeClass = item.mealType ? item.mealType.toLowerCase() : 'snack';
                 
-                mealData.forEach(item => {
-                    const time = new Date(item.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    const typeClass = item.mealType ? item.mealType.toLowerCase() : 'snack';
-                    
-                    const row = `<tr>
-                        <td style="font-family: monospace; color: var(--text-secondary);">${time}</td>
-                        <td style="font-weight: 500;">${item.description}</td>
-                        <td><span class="tag ${typeClass}">${item.mealType || 'Other'}</span></td>
-                        <td>${item.moodAfter || '<span style="color:var(--text-secondary)">-</span>'}</td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
+                const row = `<tr>
+                    <td style="font-family: monospace; color: var(--text-secondary);">${time}</td>
+                    <td style="font-weight: 500;">${item.description}</td>
+                    <td><span class="tag ${typeClass}">${item.mealType || 'Other'}</span></td>
+                    <td>${item.moodAfter || '<span style="color:var(--text-secondary)">-</span>'}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
 
-                // 4. Populate Workouts Table
-                const workoutBody = document.getElementById('workoutTableBody');
-                workoutBody.innerHTML = '';
-                
-                workoutData.forEach(item => {
-                    const row = `<tr>
-                        <td style="font-family: monospace; color: var(--text-secondary);">${item.date}</td>
-                        <td style="font-weight: 500;">${item.type}${item.subtype ? ' - ' + item.subtype : ''}</td>
-                        <td><span class="tag" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">${item.durationMinutes || 0} min</span></td>
-                        <td>${item.effort ? item.effort + '/10' : '-'}</td>
-                    </tr>`;
-                    workoutBody.innerHTML += row;
-                });
+            // 5. Populate Workouts Table
+            const workoutBody = document.getElementById('workoutTableBody');
+            workoutBody.innerHTML = '';
+            
+            workoutData.forEach(item => {
+                const row = `<tr>
+                    <td style="font-family: monospace; color: var(--text-secondary);">${item.date}</td>
+                    <td style="font-weight: 500;">${item.type}${item.subtype ? ' - ' + item.subtype : ''}</td>
+                    <td><span class="tag" style="background: rgba(236, 72, 153, 0.2); color: #f472b6;">${item.durationMinutes || 0} min</span></td>
+                    <td>${item.effort ? item.effort + '/10' : '-'}</td>
+                </tr>`;
+                workoutBody.innerHTML += row;
+            });
 
-                // 5. Populate Knowledge
-                const knowContainer = document.getElementById('knowledgeList');
-                knowContainer.innerHTML = '';
-                knowData.forEach(item => {
-                    const card = `<div style="background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid #6366f1;">
-                        <div style="font-size: 1.1em; font-style: italic; margin-bottom: 5px;">"${item.content}"</div>
-                        <div style="font-size: 0.8em; color: var(--text-secondary); display: flex; justify-content: space-between;">
-                            <span>${item.source || 'Unknown'}</span>
-                            <span class="tag" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">${item.partitionKey}</span>
-                        </div>
-                    </div>`;
-                    knowContainer.innerHTML += card;
-                });
+            // 6. Populate Knowledge
+            const knowContainer = document.getElementById('knowledgeList');
+            knowContainer.innerHTML = '';
+            knowData.forEach(item => {
+    const card = `<div style="background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 3px solid #6366f1;">
+        <div style="font-size: 1.1em; font-style: italic; margin-bottom: 5px;">"${item.content || 'No content'}"</div>
+        <div style="font-size: 0.8em; color: var(--text-secondary); display: flex; justify-content: space-between;">
+            <span>${item.source || 'User'}</span>
+            <span class="tag" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">${item.category || item.partitionKey || 'Quote'}</span>
+        </div>
+    </div>`;
+    knowContainer.innerHTML += card;
+});
 
-                // 6. Populate Meals Chart
-                const counts = {};
-                mealData.forEach(item => {
-                    const date = new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' }); 
-                    counts[date] = (counts[date] || 0) + 1;
-                });
+            // 7. Populate Meals Chart
+            const counts = {};
+            mealData.forEach(item => {
+                const date = new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' }); 
+                counts[date] = (counts[date] || 0) + 1;
+            });
 
-                const ctx = document.getElementById('mealChart').getContext('2d');
-                
-                // Gradient for bars
-                const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                gradient.addColorStop(0, '#818cf8');
-                gradient.addColorStop(1, '#4f46e5');
+            const ctx = document.getElementById('mealChart').getContext('2d');
+            
+            // Gradient for bars
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, '#818cf8');
+            gradient.addColorStop(1, '#4f46e5');
 
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(counts),
-                        datasets: [{
-                            label: 'Meals',
-                            data: Object.values(counts),
-                            backgroundColor: gradient,
-                            borderRadius: 8,
-                            borderSkipped: false,
-                            barThickness: 20
-                        }]
-                    },
-                    options: { 
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: { 
-                            y: { 
-                                beginAtZero: true, 
-                                grid: { color: 'rgba(255,255,255,0.05)' },
-                                ticks: { color: '#94a3b8' }
-                            },
-                            x: {
-                                grid: { display: false },
-                                ticks: { color: '#94a3b8' }
-                            }
-                        } 
-                    }
-                });
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        label: 'Meals',
+                        data: Object.values(counts),
+                        backgroundColor: gradient,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 20
+                    }]
+                },
+                options: { 
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    } 
+                }
+            });
 
-            } catch (err) {
-                console.error(err);
-                document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color: #f87171;">Connection Error: Azure Function Offline</td></tr>';
-                document.getElementById('workoutTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color: #f87171;">Connection Error: Azure Function Offline</td></tr>';
-            }
+        } catch (err) {
+            console.error(err);
+            document.getElementById('tableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color: #f87171;">Connection Error: Azure Function Offline</td></tr>';
+            document.getElementById('workoutTableBody').innerHTML = '<tr><td colspan="4" style="text-align:center; color: #f87171;">Connection Error: Azure Function Offline</td></tr>';
         }
-
-        loadData();
-
-        const mealForm = document.getElementById('mealForm');
-        const mealDate = document.getElementById('mealDate');
-        const mealTime = document.getElementById('mealTime');
-        const logStatus = document.getElementById('logStatus');
-
-        const workoutForm = document.getElementById('workoutForm');
-        const workoutDate = document.getElementById('workoutDate');
-        const workoutTime = document.getElementById('workoutTime');
-        const workoutStatus = document.getElementById('workoutStatus');
-        const knowledgeForm = document.getElementById('knowledgeForm');
-        const knowledgeStatus = document.getElementById('knowledgeStatus');
-
-        const now = new Date();
-        mealDate.value = now.toISOString().split('T')[0];
-        mealTime.value = now.toTimeString().slice(0, 5);
-        workoutDate.value = now.toISOString().split('T')[0];
-        workoutTime.value = now.toTimeString().slice(0, 5);
-
-        mealForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const payload = {
-                date: mealDate.value,
-                time: mealTime.value,
-                mealType: document.getElementById('mealType').value,
-                description: document.getElementById('mealDescription').value.trim(),
-                item: document.getElementById('mealDescription').value.trim(),
-                calories: Number(document.getElementById('mealCalories').value) || 0,
-                tags: document.getElementById('mealTags').value
-                    .split(',')
-                    .map((tag) => tag.trim())
-                    .filter((tag) => tag.length > 0),
-                energyAfter: document.getElementById('energyAfter').value,
-                moodAfter: document.getElementById('moodAfter').value,
-                notes: document.getElementById('mealNotes').value.trim()
-            };
-
-            const submitBtn = mealForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Logging...';
-            logStatus.textContent = '';
-
-            try {
-                const res = await fetch('http://localhost:7071/api/logmeal', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    throw new Error(errorText || 'Failed to log meal');
-                }
-
-                logStatus.style.color = '#34d399';
-                logStatus.textContent = 'Meal logged successfully.';
-                await loadData();
-            } catch (err) {
-                console.error('Log meal error:', err);
-                logStatus.style.color = '#f87171';
-                logStatus.textContent = err.message || 'Failed to log meal.';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Log';
-            }
-        });
-
-        workoutForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const payload = {
-                date: workoutDate.value,
-                time: workoutTime.value,
-                type: document.getElementById('workoutType').value,
-                subtype: document.getElementById('workoutSubtype').value.trim(),
-                durationMinutes: Number(document.getElementById('workoutDuration').value) || 0,
-                effort: Number(document.getElementById('workoutEffort').value) || null,
-                location: document.getElementById('workoutLocation').value.trim(),
-                moodBefore: document.getElementById('workoutMoodBefore').value.trim(),
-                moodAfter: document.getElementById('workoutMoodAfter').value.trim(),
-                notes: document.getElementById('workoutNotes').value.trim()
-            };
-
-            const submitBtn = workoutForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Logging...';
-            workoutStatus.textContent = '';
-
-            try {
-                const res = await fetch('http://localhost:7071/api/logWorkout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    throw new Error(errorText || 'Failed to log workout');
-                }
-
-                workoutStatus.style.color = '#34d399';
-                workoutStatus.textContent = 'Workout logged successfully.';
-                await loadData();
-            } catch (err) {
-                console.error('Log workout error:', err);
-                workoutStatus.style.color = '#f87171';
-                workoutStatus.textContent = err.message || 'Failed to log workout.';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Log Workout';
-            }
-        });
-
-        knowledgeForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const payload = {
-                source: document.getElementById('knowledgeSource').value.trim(),
-                partitionKey: document.getElementById('knowledgeCategory').value.trim(),
-                content: document.getElementById('knowledgeContent').value.trim()
-            };
-
-            const submitBtn = knowledgeForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Saving...';
-            knowledgeStatus.textContent = '';
-
-            try {
-                const res = await fetch('http://localhost:7071/api/logKnowledge', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    throw new Error(errorText || 'Failed to save knowledge');
-                }
-
-                knowledgeStatus.style.color = '#34d399';
-                knowledgeStatus.textContent = 'Knowledge saved successfully.';
-                document.getElementById('knowledgeContent').value = '';
-                await loadData();
-            } catch (err) {
-                console.error('Knowledge error:', err);
-                knowledgeStatus.style.color = '#f87171';
-                knowledgeStatus.textContent = err.message || 'Failed to save knowledge.';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Save Knowledge';
-            }
-        });
-
-       // --- NEW VOICE HANDLER (Connected to Chat Agent) ---
-document.getElementById('speakBtn').addEventListener('click', async () => {
-    const text = document.getElementById('voiceInput').value.trim();
-    if (!text) {
-        alert('Please enter text to speak');
-        return;
     }
 
-    const statusBtn = document.getElementById('speakBtn');
-    statusBtn.textContent = "Thinking...";
-    statusBtn.disabled = true;
+    loadData();
 
-    try {
-        // CHANGED: Point to chat_agent instead of speak_lesson
-        // CHANGED: Send { question: text } instead of { text: text }
-        const res = await fetch('http://localhost:7071/api/chat_agent', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ question: text }) 
-        });
+    const mealForm = document.getElementById('mealForm');
+    const mealDate = document.getElementById('mealDate');
+    const mealTime = document.getElementById('mealTime');
+    const logStatus = document.getElementById('logStatus');
 
-        if (!res.ok) {
-            throw new Error(`Agent error: ${res.statusText}`);
+    const workoutForm = document.getElementById('workoutForm');
+    const workoutDate = document.getElementById('workoutDate');
+    const workoutTime = document.getElementById('workoutTime');
+    const workoutStatus = document.getElementById('workoutStatus');
+    
+    const knowledgeForm = document.getElementById('knowledgeForm');
+    const knowledgeStatus = document.getElementById('knowledgeStatus');
+
+    const now = new Date();
+    mealDate.value = now.toISOString().split('T')[0];
+    mealTime.value = now.toTimeString().slice(0, 5);
+    workoutDate.value = now.toISOString().split('T')[0];
+    workoutTime.value = now.toTimeString().slice(0, 5);
+
+    // MEAL FORM HANDLER
+    mealForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const payload = {
+            date: mealDate.value,
+            time: mealTime.value,
+            mealType: document.getElementById('mealType').value,
+            description: document.getElementById('mealDescription').value.trim(),
+            item: document.getElementById('mealDescription').value.trim(),
+            calories: Number(document.getElementById('mealCalories').value) || 0,
+            tags: document.getElementById('mealTags').value
+                .split(',')
+                .map((tag) => tag.trim())
+                .filter((tag) => tag.length > 0),
+            energyAfter: document.getElementById('energyAfter').value,
+            moodAfter: document.getElementById('moodAfter').value,
+            notes: document.getElementById('mealNotes').value.trim()
+        };
+
+        const submitBtn = mealForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Logging...';
+        logStatus.textContent = '';
+
+        try {
+            const res = await fetch('http://localhost:7071/api/logmeal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText || 'Failed to log meal');
+            }
+
+            logStatus.style.color = '#34d399';
+            logStatus.textContent = 'Meal logged successfully.';
+            await loadData();
+        } catch (err) {
+            console.error('Log meal error:', err);
+            logStatus.style.color = '#f87171';
+            logStatus.textContent = err.message || 'Failed to log meal.';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Log';
+        }
+    });
+
+    // WORKOUT FORM HANDLER
+    workoutForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const payload = {
+            date: workoutDate.value,
+            time: workoutTime.value,
+            type: document.getElementById('workoutType').value,
+            subtype: document.getElementById('workoutSubtype').value.trim(),
+            durationMinutes: Number(document.getElementById('workoutDuration').value) || 0,
+            effort: Number(document.getElementById('workoutEffort').value) || null,
+            location: document.getElementById('workoutLocation').value.trim(),
+            moodBefore: document.getElementById('workoutMoodBefore').value.trim(),
+            moodAfter: document.getElementById('workoutMoodAfter').value.trim(),
+            notes: document.getElementById('workoutNotes').value.trim()
+        };
+
+        const submitBtn = workoutForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Logging...';
+        workoutStatus.textContent = '';
+
+        try {
+            const res = await fetch('http://localhost:7071/api/logWorkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText || 'Failed to log workout');
+            }
+
+            workoutStatus.style.color = '#34d399';
+            workoutStatus.textContent = 'Workout logged successfully.';
+            await loadData();
+        } catch (err) {
+            console.error('Log workout error:', err);
+            workoutStatus.style.color = '#f87171';
+            workoutStatus.textContent = err.message || 'Failed to log workout.';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Log Workout';
+        }
+    });
+
+    // KNOWLEDGE FORM HANDLER (FIXED)
+    knowledgeForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const payload = {
+    id: "k-dash-" + Date.now().toString(36),
+    category: document.getElementById('knowledgeCategory').value.trim(),
+    content: document.getElementById('knowledgeContent').value.trim(),
+    tags: "",
+    source: document.getElementById('knowledgeSource').value.trim()
+};
+
+console.log("DEBUG: Sending payload:", JSON.stringify(payload, null, 2));  // ADD THIS
+
+
+        const submitBtn = knowledgeForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+        knowledgeStatus.textContent = '';
+
+        try {
+            const res = await fetch('http://localhost:7071/api/saveKnowledge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText || 'Failed to save knowledge');
+            }
+
+            knowledgeStatus.style.color = '#34d399';
+            knowledgeStatus.textContent = 'Knowledge saved successfully.';
+            document.getElementById('knowledgeContent').value = '';
+            await loadData();
+        } catch (err) {
+            console.error('Knowledge error:', err);
+            knowledgeStatus.style.color = '#f87171';
+            knowledgeStatus.textContent = err.message || 'Failed to save knowledge.';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save Knowledge';
+        }
+    });
+
+    // VOICE ASSISTANT HANDLER
+    document.getElementById('speakBtn').addEventListener('click', async () => {
+        const text = document.getElementById('voiceInput').value.trim();
+        if (!text) {
+            alert('Please enter text to speak');
+            return;
         }
 
-        // Get the audio blob (agent response voice)
-        const audioBlob = await res.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        
-        statusBtn.textContent = "Speaking...";
-        
-        audio.onended = () => {
-            URL.revokeObjectURL(audioUrl);
+        const statusBtn = document.getElementById('speakBtn');
+        statusBtn.textContent = "Thinking...";
+        statusBtn.disabled = true;
+
+        try {
+            const res = await fetch('http://localhost:7071/api/chat_agent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: text }) 
+            });
+
+            if (!res.ok) {
+                throw new Error(`Agent error: ${res.statusText}`);
+            }
+
+            const audioBlob = await res.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            
+            statusBtn.textContent = "Speaking...";
+            
+            audio.onended = () => {
+                URL.revokeObjectURL(audioUrl);
+                statusBtn.textContent = "Speak";
+                statusBtn.disabled = false;
+            };
+            
+            audio.play();
+
+        } catch (err) {
+            console.error('Voice error:', err);
+            alert('Agent failed: ' + err.message);
             statusBtn.textContent = "Speak";
             statusBtn.disabled = false;
-        };
-        
-        audio.play();
+        }
+    });
+</script>
 
-    } catch (err) {
-        console.error('Voice error:', err);
-        alert('Agent failed: ' + err.message);
-        statusBtn.textContent = "Speak";
-        statusBtn.disabled = false;
-    }
-});
-    </script>
 </body>
 </html>
