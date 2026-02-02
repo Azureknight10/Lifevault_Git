@@ -220,7 +220,54 @@
     <strong>Left:</strong> Breathing (30 breaths) • <strong>Center:</strong> Enter Vault (5s) • <strong>Right:</strong> Gratitude (3 prompts)
   </p>
 
+  <!-- Navigation Buttons Section (Journal + Dashboard) -->
+  <div style="margin-top: 2rem; display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+    
+    <!-- Journal Button -->
+    <button onclick="window.location.href='journal.html'" 
+        style="
+        padding: 0.75rem 1.5rem;
+        border-radius: 999px;
+        border: none;
+        background: #fbbf24;
+        color: #111827;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+        transition: transform 0.2s;">
+        Open Daily Journal
+    </button>
+
+    <!-- Dashboard Button -->
+    <a href="public/dashboard.html" 
+        style="
+        padding: 0.75rem 1.5rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(59, 130, 246, 0.8);
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+        backdrop-filter: blur(5px);
+        transition: transform 0.2s;">
+        Vault Dashboard
+    </a>
+  </div>
+
   <script>
+    // Button Hover Effects
+    document.querySelectorAll('button, a').forEach(el => {
+        el.onmouseenter = () => el.style.transform = 'scale(1.05)';
+        el.onmouseleave = () => el.style.transform = 'scale(1)';
+    });
+
+    // Vault Entry Logic
     const circle = document.getElementById('circle');
     const water = document.getElementById('water');
     const circleText = document.getElementById('circleText');
@@ -253,6 +300,7 @@
     circle.addEventListener('touchstart', (e) => { e.preventDefault(); startFilling(); });
     circle.addEventListener('touchend', stopFilling);
 
+    // Breathing Logic
     const breathingCircle = document.getElementById('breathingCircle');
     const breathingVisual = document.getElementById('breathingVisual');
     const breathingText = document.getElementById('breathingText');
@@ -286,19 +334,19 @@
     }
 
     function stopBreathing(completed = false) {
-  if (breathingInterval) {
-    clearInterval(breathingInterval);
-    breathingInterval = null;    // <<< reset so it can start again
-  }
-  breathingVisual.classList.remove('inhale', 'exhale');
-  if (completed) {
-    breathingText.textContent = 'Complete!\nRest & Breathe';
-    setTimeout(() => { breathingText.textContent = 'Hold to Breathe'; }, 5000);
-  } else {
-    breathingText.textContent = 'Hold to Breathe';
-  }
-  breathCount = 0;
-}
+      if (breathingInterval) {
+        clearInterval(breathingInterval);
+        breathingInterval = null;
+      }
+      breathingVisual.classList.remove('inhale', 'exhale');
+      if (completed) {
+        breathingText.textContent = 'Complete!\nRest & Breathe';
+        setTimeout(() => { breathingText.textContent = 'Hold to Breathe'; }, 5000);
+      } else {
+        breathingText.textContent = 'Hold to Breathe';
+      }
+      breathCount = 0;
+    }
 
     breathingCircle.addEventListener('mousedown', (e) => { e.preventDefault(); if (!breathingInterval) startBreathing(); });
     breathingCircle.addEventListener('mouseup', () => { if (breathCount < MAX_BREATHS) stopBreathing(false); });
@@ -306,6 +354,7 @@
     breathingCircle.addEventListener('touchstart', (e) => { e.preventDefault(); if (!breathingInterval) startBreathing(); });
     breathingCircle.addEventListener('touchend', () => { if (breathCount < MAX_BREATHS) stopBreathing(false); });
 
+    // Gratitude Logic
     const gratitudeCircle = document.getElementById('gratitudeCircle');
     const gratitudeGlow = document.getElementById('gratitudeGlow');
     const gratitudeText = document.getElementById('gratitudeText');
@@ -338,18 +387,18 @@
     }
 
     function stopGratitude(completed = false) {
-  if (gratitudeInterval) {
-    clearInterval(gratitudeInterval);
-    gratitudeInterval = null;    // <<< reset so it can start again
-  }
-  gratitudeGlow.classList.remove('active');
-  if (completed) {
-    gratitudeText.textContent = 'Reflect on these...';
-    setTimeout(() => { gratitudeText.textContent = 'Hold for Gratitude'; }, 3000);
-  } else {
-    gratitudeText.textContent = 'Hold for Gratitude';
-  }
-}
+      if (gratitudeInterval) {
+        clearInterval(gratitudeInterval);
+        gratitudeInterval = null;
+      }
+      gratitudeGlow.classList.remove('active');
+      if (completed) {
+        gratitudeText.textContent = 'Reflect on these...';
+        setTimeout(() => { gratitudeText.textContent = 'Hold for Gratitude'; }, 3000);
+      } else {
+        gratitudeText.textContent = 'Hold for Gratitude';
+      }
+    }
 
     gratitudeCircle.addEventListener('mousedown', (e) => { e.preventDefault(); if (!gratitudeInterval) startGratitude(); });
     gratitudeCircle.addEventListener('mouseup', () => { if (promptIndex < 3) stopGratitude(false); });
@@ -357,23 +406,5 @@
     gratitudeCircle.addEventListener('touchstart', (e) => { e.preventDefault(); if (!gratitudeInterval) startGratitude(); });
     gratitudeCircle.addEventListener('touchend', () => { if (promptIndex < 3) stopGratitude(false); });
   </script>
-    <button
-    onclick="window.location.href='journal.html'"
-    style="
-      margin-top: 2rem;
-      padding: 0.75rem 1.5rem;
-      border-radius: 999px;
-      border: none;
-      background: #fbbf24;
-      color: #111827;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-    "
-  >
-    Open Daily Journal
-  </button>
 </body>
 </html>
-
