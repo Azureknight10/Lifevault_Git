@@ -269,17 +269,17 @@
     async function loadData() {
         try {
             // 1. Fetch Meals
-            const mealRes = await fetch('http://localhost:7071/api/getRecentActivity?table=meals&days=7');
+            const mealRes = await fetch('https://lifevault-h2gkcue9avejh7h5.eastus-01.azurewebsites.net/api/getRecentActivity?table=meals&days=7');
             const mealJson = await mealRes.json();
             const mealData = mealJson.data || [];
 
             // 2. Fetch Workouts
-            const workoutRes = await fetch('http://localhost:7071/api/getRecentActivity?table=workouts&days=7');
+            const workoutRes = await fetch('https://lifevault-h2gkcue9avejh7h5.eastus-01.azurewebsites.net/api/getRecentActivity?table=workouts&days=7');
             const workoutJson = await workoutRes.json();
             const workoutData = workoutJson.data || [];
 
             // 3. Fetch Knowledge
-            const knowRes = await fetch('http://localhost:7071/api/getRecentActivity?table=knowledge');
+            const knowRes = await fetch('https://lifevault-h2gkcue9avejh7h5.eastus-01.azurewebsites.net/api/getRecentActivity?table=knowledge');
             const knowJson = await knowRes.json();
             const knowData = knowJson.data || [];
 console.log("DEBUG knowData:", JSON.stringify(knowData, null, 2)); 
@@ -429,7 +429,7 @@ console.log("DEBUG knowData:", JSON.stringify(knowData, null, 2));
         logStatus.textContent = '';
 
         try {
-            const res = await fetch('http://localhost:7071/api/logmeal', {
+            const res = await fetch('https://lifevault-h2gkcue9avejh7h5.eastus-01.azurewebsites.net/api/logmeal', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -476,7 +476,7 @@ console.log("DEBUG knowData:", JSON.stringify(knowData, null, 2));
         workoutStatus.textContent = '';
 
         try {
-            const res = await fetch('http://localhost:7071/api/logWorkout', {
+            const res = await fetch('https://lifevault-h2gkcue9avejh7h5.eastus-01.azurewebsites.net/api/logWorkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -521,7 +521,7 @@ console.log("DEBUG: Sending payload:", JSON.stringify(payload, null, 2));  // AD
         knowledgeStatus.textContent = '';
 
         try {
-            const res = await fetch('http://localhost:7071/api/saveKnowledge', {
+            const res = await fetch('https://lifevault-h2gkcue9avejh7h5.eastus-01.azurewebsites.net/api/saveKnowledge', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -559,7 +559,7 @@ console.log("DEBUG: Sending payload:", JSON.stringify(payload, null, 2));  // AD
         statusBtn.disabled = true;
 
         try {
-            const res = await fetch('http://localhost:7071/api/chat_agent', {
+            const res = await fetch('https://lifevault-h2gkcue9avejh7h5.eastus-01.azurewebsites.net/api/chat_agent', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ question: text }) 
