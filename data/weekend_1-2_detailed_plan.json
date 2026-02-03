@@ -1,0 +1,377 @@
+{
+  "weekend": "1-2",
+  "title": "Multi-Agent Architecture Foundation",
+  "dates": "Feb 7-8 & Feb 14-15, 2026",
+  "total_hours": "24-32",
+  "goal": "Transform LifeVault into a multi-agent orchestration system with reasoning and persistent memory",
+  "saturday_feb_7": {
+    "date": "Saturday, February 7, 2026",
+    "total_hours": "8 hours",
+    "schedule": {
+      "7:00am_9:00am": {
+        "block": "Morning Session 1 (2 hours)",
+        "focus": "Architecture Design & Planning",
+        "tasks": [
+          "Review your current LifeVault MCP tools (log_workout, log_meal, etc)",
+          "Sketch multi-agent architecture diagram on paper/whiteboard",
+          "Define 4 agent roles: Coach Agent (workout recommendations), Nutrition Agent (meal planning), Analytics Agent (pattern recognition), Memory Agent (retrieval)",
+          "Map out communication flows between agents",
+          "Document agent responsibilities in a design doc (Markdown file)"
+        ],
+        "deliverable": "Agent_Architecture_Design.md with system diagram",
+        "tools_needed": [
+          "Paper/whiteboard",
+          "VS Code",
+          "Draw.io or Excalidraw"
+        ]
+      },
+      "9:00am_9:30am": {
+        "block": "Break",
+        "activity": "Stretch, eat, hydrate"
+      },
+      "9:30am_12:00pm": {
+        "block": "Morning Session 2 (2.5 hours)",
+        "focus": "Orchestrator Foundation",
+        "tasks": [
+          "Create new folder: lifevault-orchestrator/",
+          "Initialize Node.js project: npm init",
+          "Install dependencies: @azure/service-bus, redis, uuid, dotenv",
+          "Build orchestrator.js - main entry point that receives user queries",
+          "Implement query classification logic (determine which agent should handle request)",
+          "Create agent router function that forwards queries to appropriate agent",
+          "Add basic logging to track routing decisions"
+        ],
+        "deliverable": "Working orchestrator that can classify and route queries",
+        "code_structure": {
+          "orchestrator.js": "Main router",
+          "agentRouter.js": "Classification logic",
+          "config.js": "Agent definitions"
+        }
+      },
+      "12:00pm_1:00pm": {
+        "block": "Lunch Break",
+        "activity": "Meal, rest, walk"
+      },
+      "1:00pm_3:30pm": {
+        "block": "Afternoon Session 1 (2.5 hours)",
+        "focus": "Agent Stubs & Communication Protocol",
+        "tasks": [
+          "Create agents/ folder with 4 stub files: coachAgent.js, nutritionAgent.js, analyticsAgent.js, memoryAgent.js",
+          "Each agent implements handleQuery(query, context) function",
+          "Set up Azure Service Bus namespace in Azure Portal (or use Redis if simpler)",
+          "Create 4 queues/topics: coach-queue, nutrition-queue, analytics-queue, memory-queue",
+          "Implement message sending from orchestrator to agent queues",
+          "Implement message receiving in each agent stub",
+          "Test basic message flow: orchestrator -> coach agent -> response"
+        ],
+        "deliverable": "4 agent stubs communicating via message bus",
+        "azure_setup": [
+          "Create Service Bus namespace in Azure Portal",
+          "Get connection string",
+          "Add to .env file"
+        ]
+      },
+      "3:30pm_4:00pm": {
+        "block": "Break",
+        "activity": "Walk, coffee, stretch"
+      },
+      "4:00pm_5:00pm": {
+        "block": "Afternoon Session 2 (1 hour)",
+        "focus": "Testing & Documentation",
+        "tasks": [
+          "Write test queries: 'I just ran 5k', 'What should I eat for dinner?', 'How am I trending this week?'",
+          "Verify orchestrator routes each query to correct agent",
+          "Check logs to confirm message delivery",
+          "Update Agent_Architecture_Design.md with implementation notes",
+          "Commit all code to Git: 'feat: orchestrator and agent stubs with message bus'",
+          "Push to GitHub"
+        ],
+        "deliverable": "Tested routing system, code in Git",
+        "success_criteria": [
+          "Orchestrator classifies queries correctly",
+          "Messages reach correct agent queues",
+          "Basic response loop works"
+        ]
+      }
+    }
+  },
+  "sunday_feb_8": {
+    "date": "Sunday, February 8, 2026",
+    "total_hours": "8 hours",
+    "schedule": {
+      "7:00am_9:30am": {
+        "block": "Morning Session 1 (2.5 hours)",
+        "focus": "Context Management System",
+        "tasks": [
+          "Create contextManager.js for shared state across agents",
+          "Implement conversation history storage (in-memory for now, Redis later)",
+          "Add context object structure: { userId, conversationId, history[], currentIntent, timestamp }",
+          "Build context injection: attach context to every agent query",
+          "Build context updates: agents can write back to shared context",
+          "Test: verify agents can see previous conversation turns"
+        ],
+        "deliverable": "Working context management that agents share",
+        "data_structure": "Context object with conversation history"
+      },
+      "9:30am_10:00am": {
+        "block": "Break",
+        "activity": "Stretch, hydrate"
+      },
+      "10:00am_12:30pm": {
+        "block": "Morning Session 2 (2.5 hours)",
+        "focus": "Coach Agent Implementation",
+        "tasks": [
+          "Open coachAgent.js and implement full logic",
+          "Connect Coach Agent to Azure OpenAI with system prompt defining its role",
+          "Give Coach Agent access to Memory Agent (can query workout history)",
+          "Implement reasoning: 'Based on your last 3 workouts, you should rest' or 'Time for legs day'",
+          "Add tool use: Coach Agent can call getRecentWorkouts from your existing MCP tools",
+          "Test with real queries: 'What workout should I do today?'",
+          "Verify Coach Agent retrieves past data and gives personalized advice"
+        ],
+        "deliverable": "Fully functional Coach Agent with reasoning",
+        "integration_points": [
+          "Azure OpenAI API",
+          "Your existing getRecentWorkouts function",
+          "Context manager"
+        ]
+      },
+      "12:30pm_1:30pm": {
+        "block": "Lunch Break",
+        "activity": "Meal, rest"
+      },
+      "1:30pm_3:30pm": {
+        "block": "Afternoon Session 1 (2 hours)",
+        "focus": "Memory Agent with Basic Retrieval",
+        "tasks": [
+          "Implement memoryAgent.js with query handling",
+          "Connect to Azure Table Storage (your existing workout/meal tables)",
+          "Build simple semantic search: keyword matching on workout/meal descriptions",
+          "Implement queryMemory(question) function that returns relevant past entries",
+          "Test queries: 'When did I last do heavy squats?', 'What did I eat yesterday?'",
+          "Document retrieval accuracy and limitations"
+        ],
+        "deliverable": "Memory Agent that retrieves relevant past data",
+        "note": "This is simplified retrieval - Weekend 3-4 will add vector embeddings"
+      },
+      "3:30pm_4:00pm": {
+        "block": "Break",
+        "activity": "Walk, coffee"
+      },
+      "4:00pm_5:00pm": {
+        "block": "Afternoon Session 2 (1 hour)",
+        "focus": "End-to-End Testing & Documentation",
+        "tasks": [
+          "Test complete flow: User query -> Orchestrator -> Coach Agent -> Memory Agent -> Response",
+          "Verify context is maintained across multi-turn conversations",
+          "Test inter-agent communication: Coach asks Memory for data",
+          "Document agent interaction logs",
+          "Update architecture diagram with actual implementation details",
+          "Commit to Git: 'feat: coach and memory agents with context management'",
+          "Write README.md explaining how the multi-agent system works"
+        ],
+        "deliverable": "Working 2-agent system with documentation",
+        "success_criteria": [
+          "Coach Agent gives personalized recommendations",
+          "Memory Agent successfully retrieves past data",
+          "Context flows between agents"
+        ]
+      }
+    }
+  },
+  "saturday_feb_14": {
+    "date": "Saturday, February 14, 2026",
+    "total_hours": "8 hours",
+    "schedule": {
+      "7:00am_9:30am": {
+        "block": "Morning Session 1 (2.5 hours)",
+        "focus": "Nutrition & Analytics Agents",
+        "tasks": [
+          "Implement nutritionAgent.js similar to Coach Agent",
+          "System prompt: nutritionist giving meal recommendations based on workout data",
+          "Tool use: can query recent meals and workouts to suggest nutrition",
+          "Implement analyticsAgent.js for pattern recognition",
+          "Analytics Agent calculates: workout frequency, meal patterns, energy trends",
+          "Test: 'What should I eat to recover from yesterday's workout?'",
+          "Test: 'How am I trending this month?'"
+        ],
+        "deliverable": "Nutrition and Analytics Agents operational",
+        "agent_count": "4 agents total now working"
+      },
+      "9:30am_10:00am": {
+        "block": "Break",
+        "activity": "Stretch, hydrate"
+      },
+      "10:00am_12:30pm": {
+        "block": "Morning Session 2 (2.5 hours)",
+        "focus": "Persistent Memory Store (Vector DB Foundation)",
+        "tasks": [
+          "Sign up for Pinecone free tier OR set up Azure AI Search",
+          "Create new index: 'lifevault-memories'",
+          "Install SDK: npm install @pinecone-database/pinecone (or @azure/search-documents)",
+          "Build memory storage function: store workout/meal summaries with metadata",
+          "Test storing: convert last 10 workouts into vector embeddings (use Azure OpenAI embeddings API)",
+          "Verify embeddings are stored in vector DB",
+          "Build simple retrieval query"
+        ],
+        "deliverable": "Vector database storing your workout/meal memories",
+        "note": "This sets foundation for Weekend 3-4 RAG work"
+      },
+      "12:30pm_1:30pm": {
+        "block": "Lunch Break",
+        "activity": "Meal, rest"
+      },
+      "1:30pm_3:30pm": {
+        "block": "Afternoon Session 1 (2 hours)",
+        "focus": "Reasoning Engines - Chain-of-Thought",
+        "tasks": [
+          "Update Coach Agent with chain-of-thought prompting",
+          "Add reasoning steps: '1. Check recent workouts, 2. Assess recovery, 3. Recommend workout'",
+          "Log reasoning traces to see agent's decision process",
+          "Implement in Analytics Agent: show step-by-step how it calculates trends",
+          "Test with complex query: 'Should I workout today or rest?'",
+          "Verify you can see the agent's reasoning in logs"
+        ],
+        "deliverable": "Agents with visible reasoning chains",
+        "benefit": "Makes AI decisions explainable and debuggable"
+      },
+      "3:30pm_4:00pm": {
+        "block": "Break",
+        "activity": "Walk, stretch"
+      },
+      "4:00pm_5:00pm": {
+        "block": "Afternoon Session 2 (1 hour)",
+        "focus": "Testing & Documentation",
+        "tasks": [
+          "Run comprehensive test suite with all 4 agents",
+          "Test inter-agent collaboration: Coach asks Analytics for trends, then makes recommendation",
+          "Verify vector memory store is working",
+          "Document reasoning traces in examples.md",
+          "Update architecture diagram with vector DB",
+          "Commit: 'feat: all 4 agents operational with reasoning and vector memory'",
+          "Push to GitHub"
+        ],
+        "deliverable": "Complete 4-agent system with persistent memory",
+        "milestone": "Weekend 1 complete!"
+      }
+    }
+  },
+  "sunday_feb_15": {
+    "date": "Sunday, February 15, 2026",
+    "total_hours": "8 hours",
+    "schedule": {
+      "7:00am_9:30am": {
+        "block": "Morning Session 1 (2.5 hours)",
+        "focus": "Tree-of-Thought Reasoning (Advanced)",
+        "tasks": [
+          "Research tree-of-thought prompting pattern",
+          "Implement in Coach Agent for complex decisions",
+          "Pattern: Generate 3 possible workout plans, evaluate each, select best",
+          "Add branching logic: agent explores multiple reasoning paths",
+          "Log decision tree to visualize thought process",
+          "Test with: 'Plan my workouts for the next 3 days'"
+        ],
+        "deliverable": "Coach Agent with tree-of-thought reasoning",
+        "advanced_feature": "Puts you ahead of basic AI engineers"
+      },
+      "9:30am_10:00am": {
+        "block": "Break",
+        "activity": "Stretch, hydrate"
+      },
+      "10:00am_12:30pm": {
+        "block": "Morning Session 2 (2.5 hours)",
+        "focus": "Inter-Agent Negotiation Protocol",
+        "tasks": [
+          "Scenario: Coach Agent wants hard workout, Nutrition Agent flags low recent calories",
+          "Build negotiation protocol: agents can challenge each other's recommendations",
+          "Implement conflict resolution: agents discuss and reach consensus",
+          "Add priority weighting: health/safety concerns override performance goals",
+          "Test conflicting scenario: push hard vs. rest due to poor nutrition",
+          "Log negotiation process"
+        ],
+        "deliverable": "Agents that negotiate and resolve conflicts",
+        "innovation": "Most multi-agent systems don't have this - you're ahead"
+      },
+      "12:30pm_1:30pm": {
+        "block": "Lunch Break",
+        "activity": "Meal, rest"
+      },
+      "1:30pm_3:30pm": {
+        "block": "Afternoon Session 1 (2 hours)",
+        "focus": "Goal-Driven Planning",
+        "tasks": [
+          "Implement goal decomposition in Analytics Agent",
+          "User sets goal: 'Run a 5k in under 25 minutes'",
+          "Agent breaks into subtasks: build endurance, increase speed, track progress",
+          "Create task queue that Coach Agent uses to plan workouts",
+          "Add progress tracking: measure distance to goal each week",
+          "Test: set a fitness goal and see multi-week plan generated"
+        ],
+        "deliverable": "Goal-driven planning system",
+        "practical_value": "Makes LifeVault actually useful for your real fitness goals"
+      },
+      "3:30pm_4:00pm": {
+        "block": "Break",
+        "activity": "Walk, coffee"
+      },
+      "4:00pm_5:00pm": {
+        "block": "Final Session - Documentation & Wrap-up",
+        "focus": "Weekend 1-2 Completion",
+        "tasks": [
+          "Write comprehensive Agent_System_Documentation.md",
+          "Include: architecture diagram, agent roles, reasoning examples, interaction flows",
+          "Create demo video (screen recording) showing multi-agent conversations",
+          "Update your lifevault_12week_tracker.json: set Weekend 1-2 status to 'COMPLETED'",
+          "List achievements: 4 agents, reasoning, memory, negotiation, goal planning",
+          "Identify blockers or challenges for retrospective",
+          "Commit final code: 'docs: complete Weekend 1-2 multi-agent system documentation'",
+          "Celebrate! You just built something most AI engineers haven't."
+        ],
+        "deliverable": "Complete Weekend 1-2 with documentation and demo",
+        "status_update": "COMPLETED"
+      }
+    }
+  },
+  "key_resources": {
+    "documentation": [
+      "Azure OpenAI chain-of-thought prompting guide",
+      "LangChain multi-agent examples",
+      "AutoGen framework documentation (for inspiration)"
+    ],
+    "apis_needed": [
+      "Azure OpenAI API (you already have)",
+      "Azure Service Bus or Redis",
+      "Pinecone or Azure AI Search",
+      "Azure OpenAI Embeddings API"
+    ],
+    "estimated_costs": {
+      "Azure OpenAI": "$5-10 for weekend (testing/reasoning)",
+      "Service Bus": "Free tier sufficient",
+      "Pinecone": "Free tier (100k vectors)",
+      "Total": "~$10-15 for Weekend 1-2"
+    }
+  },
+  "success_metrics": {
+    "weekend_1_2_complete_when": [
+      "4 agents (Coach, Nutrition, Analytics, Memory) operational",
+      "Orchestrator routes queries to correct agents",
+      "Context management working (agents share conversation history)",
+      "Persistent memory in vector database",
+      "Chain-of-thought reasoning visible in logs",
+      "Inter-agent negotiation working for conflicts",
+      "Goal-driven planning implemented",
+      "All code documented and in Git",
+      "Demo video showing agent interactions"
+    ]
+  },
+  "tips_for_success": [
+    "Start EXACTLY at 7 AM Saturday - momentum matters",
+    "Take all scheduled breaks - prevents burnout",
+    "If stuck >30 min, move to next task and revisit later",
+    "Commit to Git after every major task (not just end of day)",
+    "Keep VS Code, Azure Portal, and docs open in separate monitors",
+    "Test incrementally - don't wait until end to verify things work",
+    "Log everything - reasoning traces are your portfolio evidence",
+    "If ahead of schedule, start Weekend 3-4 prep (vector DB research)"
+  ]
+}

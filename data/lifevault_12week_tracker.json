@@ -1,0 +1,235 @@
+{
+  "project": "LifeVault AI Engineering Portfolio",
+  "timeline": "February 7 - May 8, 2026 (12 weeks)",
+  "total_weekends": 13,
+  "estimated_hours": "144-192 hours",
+  "completion_target": "May 8, 2026 (MSSA graduation)",
+  "difficulty": "9/10",
+  "target_roles": [
+    "AI Engineer ($140k-$180k)",
+    "Senior AI Engineer",
+    "AI Solutions Architect",
+    "MLOps Lead"
+  ],
+  "roadmap": [
+    {
+      "weekend": "1-2",
+      "dates": "Feb 7-8 & Feb 14-15",
+      "hours": "24-32",
+      "title": "Multi-Agent Architecture Foundation",
+      "tasks": [
+        "Design hierarchical agent system (Coach, Nutrition, Analytics, Memory)",
+        "Implement agent communication via Azure Service Bus/Redis",
+        "Build orchestrator with query routing",
+        "Add context management for shared state",
+        "Implement persistent memory stores (vector + graph DB)",
+        "Add reasoning engines (chain-of-thought + tree-of-thought)",
+        "Document agent responsibilities and flows"
+      ],
+      "deliverables": [
+        "Multi-agent system diagram",
+        "Working orchestrator",
+        "Agent communication logs"
+      ],
+      "skills": [
+        "Multi-agent systems",
+        "Agent orchestration",
+        "Reasoning patterns",
+        "Distributed AI"
+      ],
+      "status": "NOT_STARTED"
+    },
+    {
+      "weekend": "3-4",
+      "dates": "Feb 21-22 & Feb 28-Mar 1",
+      "hours": "24-32",
+      "title": "Hybrid RAG + Small Model Fine-Tuning",
+      "tasks": [
+        "Implement Azure AI Search/Pinecone vector database",
+        "Create embeddings from workout/meal/journal data",
+        "Build adaptive RAG with dynamic retrieval depth",
+        "Fine-tune small model (Phi-3 or Llama 3.2-3B)",
+        "Implement routing logic (small model vs GPT-4)",
+        "Add confidence scoring for human-in-loop triggers",
+        "Build synthetic data generation pipeline",
+        "Measure cost per query and latency trade-offs"
+      ],
+      "deliverables": [
+        "RAG pipeline",
+        "Fine-tuned model",
+        "Cost comparison dashboard"
+      ],
+      "skills": [
+        "RAG architecture",
+        "Vector databases",
+        "Model fine-tuning",
+        "Cost optimization"
+      ],
+      "status": "NOT_STARTED"
+    },
+    {
+      "weekend": "5-6",
+      "dates": "Mar 7-8 & Mar 14-15",
+      "hours": "24-32",
+      "title": "Digital Twin + Predictive Analytics",
+      "tasks": [
+        "Create digital twin model simulating energy/recovery/performance",
+        "Implement time-series forecasting (LSTM/Transformer)",
+        "Build what-if simulation engine",
+        "Add anomaly detection (injury risk, overtraining)",
+        "Integrate causal inference models",
+        "Visualize predicted vs actual outcomes",
+        "Document model accuracy metrics"
+      ],
+      "deliverables": [
+        "Digital twin system",
+        "Prediction dashboard",
+        "Simulation API"
+      ],
+      "skills": [
+        "Digital twins",
+        "Time-series ML",
+        "Predictive analytics",
+        "Causal inference"
+      ],
+      "status": "NOT_STARTED"
+    },
+    {
+      "weekend": "7-8",
+      "dates": "Mar 21-22 & Mar 28-29",
+      "hours": "24-32",
+      "title": "AI Governance + Model Risk Management",
+      "tasks": [
+        "Build model card documentation for all AI components",
+        "Implement automated bias detection testing",
+        "Create model versioning registry with lineage tracking",
+        "Add automated safety testing (prompt injection, jailbreaks)",
+        "Build compliance dashboard (SOC 2/HIPAA-style)",
+        "Document model risk assessment with failure modes",
+        "Create audit trails and access logs"
+      ],
+      "deliverables": [
+        "Model cards",
+        "Governance dashboard",
+        "Security test suite"
+      ],
+      "skills": [
+        "AI governance",
+        "Model risk management",
+        "Compliance",
+        "Security"
+      ],
+      "status": "NOT_STARTED"
+    },
+    {
+      "weekend": "9-10",
+      "dates": "Apr 4-5 & Apr 11-12",
+      "hours": "24-32",
+      "title": "Multi-Agent Tool Use + API Orchestration",
+      "tasks": [
+        "Build tool registry for dynamic API discovery",
+        "Implement ReAct + Reflexion patterns",
+        "Add parallel tool execution with result synthesis",
+        "Create tool usage monitoring (success rates, latency, cost)",
+        "Build error recovery workflows with fallbacks",
+        "Add tool composition for complex task chains",
+        "Document autonomous tool use capabilities"
+      ],
+      "deliverables": [
+        "Tool registry system",
+        "ReAct agent workflows",
+        "Tool monitoring dashboard"
+      ],
+      "skills": [
+        "Tool use",
+        "API orchestration",
+        "Autonomous systems",
+        "Error handling"
+      ],
+      "status": "NOT_STARTED"
+    },
+    {
+      "weekend": "11",
+      "dates": "Apr 18-19",
+      "hours": "12-16",
+      "title": "Edge AI + Local Model Deployment",
+      "tasks": [
+        "Deploy quantized small model locally (GGUF format)",
+        "Build hybrid inference (local vs cloud routing)",
+        "Implement on-device vector search",
+        "Add privacy-preserving analytics",
+        "Measure latency and cost savings",
+        "Document deployment to edge devices"
+      ],
+      "deliverables": [
+        "Local model deployment",
+        "Hybrid inference system",
+        "Performance benchmarks"
+      ],
+      "skills": [
+        "Edge AI",
+        "Model optimization",
+        "Local deployment",
+        "Privacy tech"
+      ],
+      "status": "NOT_STARTED"
+    },
+    {
+      "weekend": "12",
+      "dates": "Apr 25-26",
+      "hours": "12-16",
+      "title": "Multimodal AI + Kinect Integration",
+      "tasks": [
+        "Integrate Kinect skeletal tracking (25-joint capture)",
+        "Build vision-language-action models for workout form analysis",
+        "Implement cross-modal retrieval (text/image/sensor search)",
+        "Add spatial reasoning with GPT-4V",
+        "Create real-time form correction feedback",
+        "Calculate joint angles and compare to ideal ranges",
+        "Document biomechanical analysis pipeline"
+      ],
+      "deliverables": [
+        "Kinect integration",
+        "Form analysis system",
+        "Real-time feedback demo"
+      ],
+      "skills": [
+        "Multimodal reasoning",
+        "Computer vision",
+        "Biomechanics",
+        "Sensor integration"
+      ],
+      "status": "NOT_STARTED"
+    },
+    {
+      "weekend": "13",
+      "dates": "May 2-3",
+      "hours": "12-16",
+      "title": "Open Source AI + Portfolio Packaging",
+      "tasks": [
+        "Implement model abstraction layer (Azure/Anthropic/OSS)",
+        "Deploy open-source models with A/B comparison",
+        "Create cost comparison dashboard across providers",
+        "Document multi-cloud AI strategy",
+        "Write comprehensive technical blog post",
+        "Create architecture decision records (ADRs)",
+        "Record video demo walkthrough",
+        "Build presentation slide deck with metrics",
+        "Publish to GitHub with detailed README"
+      ],
+      "deliverables": [
+        "Model portability layer",
+        "Blog post",
+        "Video demo",
+        "GitHub repo"
+      ],
+      "skills": [
+        "Model portability",
+        "Vendor neutrality",
+        "Technical communication",
+        "Portfolio presentation"
+      ],
+      "status": "NOT_STARTED"
+    }
+  ]
+}
