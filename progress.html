@@ -281,99 +281,162 @@
     </div>
 
     <script>
-      console.log('✅ Progress tracker initialized');
-
-      // Global state
+      // ===== GLOBAL STATE =====
       let trackerData = null;
       const STORAGE_KEY = 'lifevault_progress';
 
-      // Load tracker and initialize
-      async function init() {
-        console.log('🚀 Initializing tracker...');
-        
+      // ===== INITIALIZATION =====
+      window.addEventListener('DOMContentLoaded', () => {
+        console.clear();
+        console.log('🚀 PAGE LOADED - Starting initialization...');
+        loadTrackerData();
+      });
+
+      // ===== LOAD DATA =====
+      async function loadTrackerData() {
         try {
+          console.log('📥 Fetching tracker JSON...');
           const response = await fetch('data/lifevault_12week_tracker.json');
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
           
           trackerData = await response.json();
-          console.log('✅ Loaded tracker data');
+          console.log('✅ JSON loaded successfully');
+          console.log('Total weekends:', trackerData.roadmap.length);
+
+          // Initialize task status
+          trackerData.roadmap.forEach(weekend => {
+            if (!weekend.taskStatus) {
+              weekend.taskStatus = new Array(weekend.tasks.length).fill('NOT_STARTED');
+            }
+          });
+
+          console.log('✅ Task status initialized');
           
-          // Load saved progress from localStorage
+          // Load saved progress
           const saved = localStorage.getItem(STORAGE_KEY);
           if (saved) {
-            const savedProgress = JSON.parse(saved);
+            console.log('📦 Found saved progress, loading...');
+            const savedData = JSON.parse(saved);
             trackerData.roadmap.forEach(weekend => {
-              const saved_weekend = savedProgress.roadmap.find(w => w.weekend === weekend.weekend);
-              if (saved_weekend) {
-                weekend.taskStatus = saved_weekend.taskStatus;
-              } else {
-                weekend.taskStatus = weekend.tasks.map(() => 'NOT_STARTED');
+              const savedWeekend = savedData.roadmap.find(w => w.weekend === weekend.weekend);
+              if (savedWeekend) {
+                weekend.taskStatus = savedWeekend.taskStatus;
               }
             });
-            console.log('✅ Loaded saved progress from localStorage');
+            console.log('✅ Saved progress loaded');
           } else {
-            // Initialize if no save
-            trackerData.roadmap.forEach(weekend => {
-              weekend.taskStatus = weekend.tasks.map(() => 'NOT_STARTED');
-            });
-            console.log('✅ Initialized fresh task status');
+            console.log('⚪ No saved progress found');
           }
 
-          render();
-          attachEventListeners();
-          
+          // Render everything
+          updateDisplay();
+          console.log('✅ Page rendered successfully');
+
         } catch (error) {
-          console.error('❌ Error loading tracker:', error);
-          document.getElementById('weekendBlocks').innerHTML =
-            '<p style="color: white; text-align: center;">❌ Error loading tracker data</p>';
+          console.error('❌ FATAL ERROR:', error);
+          document.getElementById('weekendBlocks').innerHTML = 
+            '<p style="color: white; text-align: center; padding: 20px;">❌ Failed to load tracker</p>';
         }
       }
 
-      // Save progress to localStorage
-      function saveProgress() {
-        if (!trackerData) return;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(trackerData));
-        console.log('💾 Progress saved to localStorage');
+      // ===== SAVE PROGRESS =====
+      function saveToStorage() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(trackerData));
+          console.log('💾 Saved to localStorage');
+        } catch (error) {
+          console.error('❌ Failed to save:', error);
+        }
       }
 
-      // Main render function
-      function render() {
-        renderSummary();
-        renderWeekends();
+      // ===== UPDATE TASK STATUS =====
+      window.updateTask = function(weekendNum, taskIdx, newStatus) {
+        console.log('');
+        console.log('═══════════════════════════════');
+        console.log(`🔘 BUTTON CLICKED`);
+        console.log(`   Weekend: ${weekendNum}`);
+        console.log(`   Task: ${taskIdx}`);
+        console.log(`   New Status: ${newStatus}`);
+        console.log('═══════════════════════════════');
+
+        if (!trackerData) {
+          console.error('❌ ERROR: trackerData is null!');
+          return;
+        }
+
+        const weekend = trackerData.roadmap.find(w => w.weekend === weekendNum);
+        if (!weekend) {
+          console.error(`❌ ERROR: Weekend ${weekendNum} not found!`);
+          return;
+        }
+
+        if (!weekend.taskStatus) {
+          console.error(`❌ ERROR: Weekend ${weekendNum} has no taskStatus!`);
+          return;
+        }
+
+        if (taskIdx >= weekend.taskStatus.length) {
+          console.error(`❌ ERROR: Task ${taskIdx} out of bounds!`);
+          return;
+        }
+
+        const oldStatus = weekend.taskStatus[taskIdx];
+        weekend.taskStatus[taskIdx] = newStatus;
+        console.log(`✅ Task status changed: ${oldStatus} → ${newStatus}`);
+
+        saveToStorage();
+        updateDisplay();
+
+        console.log('✅ Display updated');
+        console.log('');
+      };
+
+      // ===== MAIN RENDER FUNCTION =====
+      function updateDisplay() {
+        renderSummaryCards();
+        renderWeekendBlocks();
       }
 
-      // Render summary cards
-      function renderSummary() {
+      // ===== RENDER SUMMARY CARDS =====
+      function renderSummaryCards() {
         if (!trackerData) return;
-
-        const timeline = document.getElementById('timeline');
-        timeline.textContent = trackerData.timeline + ' | Target: ' + trackerData.completion_target;
 
         let totalTasks = 0;
         let completedTasks = 0;
         let totalHours = 0;
 
         trackerData.roadmap.forEach(weekend => {
-          totalTasks += weekend.tasks.length;
-          const completed = (weekend.taskStatus || []).filter(s => s === 'COMPLETED').length;
-          completedTasks += completed;
+          const numTasks = weekend.tasks.length;
+          const numCompleted = (weekend.taskStatus || []).filter(s => s === 'COMPLETED').length;
           
-          const weekendProgress = completed / weekend.tasks.length;
-          const weekendHours = parseInt(weekend.hours.split('-')[0]);
-          totalHours += Math.round(weekendHours * weekendProgress);
+          totalTasks += numTasks;
+          completedTasks += numCompleted;
+
+          const progressPercent = numCompleted / numTasks;
+          const baseHours = parseInt(weekend.hours.split('-')[0]);
+          totalHours += Math.round(baseHours * progressPercent);
         });
 
-        const percentComplete = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-        const completedWeekends = trackerData.roadmap.filter(w => w.status === 'COMPLETED').length;
-        const inProgressWeekends = trackerData.roadmap.filter(w => w.status === 'IN_PROGRESS').length;
+        const overallPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+        const completedWeekends = trackerData.roadmap.filter(w => {
+          const completed = (w.taskStatus || []).filter(s => s === 'COMPLETED').length;
+          return completed === w.tasks.length;
+        }).length;
+        const activeWeekends = trackerData.roadmap.filter(w => {
+          const completed = (w.taskStatus || []).filter(s => s === 'COMPLETED').length;
+          return completed > 0 && completed < w.tasks.length;
+        }).length;
 
-        console.log(`📊 Summary: ${percentComplete}% complete (${completedTasks}/${totalTasks} tasks)`);
+        console.log(`📊 SUMMARY: ${overallPercent}% (${completedTasks}/${totalTasks} tasks)`);
 
-        const summaryHTML = `
+        const html = `
           <div class="card">
             <h3>Overall Progress</h3>
-            <div class="big-number">${percentComplete}%</div>
-            <p>${completedTasks} of ${totalTasks} tasks complete</p>
+            <div class="big-number">${overallPercent}%</div>
+            <p>${completedTasks} of ${totalTasks} tasks</p>
           </div>
           <div class="card">
             <h3>Hours Invested</h3>
@@ -381,62 +444,75 @@
             <p>of ${trackerData.estimated_hours} hours</p>
           </div>
           <div class="card">
-            <h3>Weekends Status</h3>
+            <h3>Weekends</h3>
             <div class="big-number">${completedWeekends}</div>
-            <p>${inProgressWeekends} in progress</p>
+            <p>${activeWeekends} in progress</p>
           </div>
           <div class="card">
-            <h3>Difficulty Level</h3>
+            <h3>Difficulty</h3>
             <div class="big-number">${trackerData.difficulty}</div>
             <p>out of 10</p>
           </div>
         `;
 
-        document.getElementById('summaryCards').innerHTML = summaryHTML;
+        document.getElementById('summaryCards').innerHTML = html;
       }
 
-      // Render weekend blocks
-      function renderWeekends() {
+      // ===== RENDER WEEKEND BLOCKS =====
+      function renderWeekendBlocks() {
         if (!trackerData) return;
 
         const container = document.getElementById('weekendBlocks');
-        container.innerHTML = '';
+        let html = '';
 
         trackerData.roadmap.forEach(weekend => {
-          const taskStatus = weekend.taskStatus || [];
-          const completedTasks = taskStatus.filter(s => s === 'COMPLETED').length;
-          const totalTasks = weekend.tasks.length;
-          const percentComplete = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+          const completed = (weekend.taskStatus || []).filter(s => s === 'COMPLETED').length;
+          const total = weekend.tasks.length;
+          const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
-          // Update weekend status based on tasks
-          if (completedTasks === totalTasks && totalTasks > 0) {
-            weekend.status = 'COMPLETED';
-          } else if (completedTasks > 0 || taskStatus.some(s => s === 'IN_PROGRESS')) {
-            weekend.status = 'IN_PROGRESS';
-          } else {
-            weekend.status = 'NOT_STARTED';
-          }
+          // Determine status
+          let status = 'NOT_STARTED';
+          if (completed === total && total > 0) status = 'COMPLETED';
+          else if (completed > 0) status = 'IN_PROGRESS';
 
-          const tasksHTML = weekend.tasks.map((task, index) => {
-            const status = taskStatus[index] || 'NOT_STARTED';
-            const statusClass = status === 'COMPLETED' ? 'completed' : status === 'IN_PROGRESS' ? 'in-progress' : '';
-            
-            return `
-              <div class="task-item ${statusClass}">
+          // Build tasks HTML
+          let tasksHtml = '';
+          weekend.tasks.forEach((task, idx) => {
+            const taskStatus = (weekend.taskStatus || [])[idx] || 'NOT_STARTED';
+            const taskClass = taskStatus === 'COMPLETED' ? 'completed' : taskStatus === 'IN_PROGRESS' ? 'in-progress' : '';
+
+            tasksHtml += `
+              <div class="task-item ${taskClass}">
                 <span>${task}</span>
                 <div class="task-buttons">
-                  <button class="task-btn btn-progress" onclick="completeTask(${weekend.weekend}, ${index}, 'IN_PROGRESS')">
+                  <button class="task-btn btn-progress" onclick="updateTask(${weekend.weekend}, ${idx}, 'IN_PROGRESS')">
                     In Progress
                   </button>
-                  <button class="task-btn btn-complete" onclick="completeTask(${weekend.weekend}, ${index}, 'COMPLETED')">
+                  <button class="task-btn btn-complete" onclick="updateTask(${weekend.weekend}, ${idx}, 'COMPLETED')">
                     ✓ Complete
                   </button>
                 </div>
               </div>
             `;
-          }).join('');
+          });
 
-          const weekendHTML = `
+          // Build deliverables HTML
+          let deliverablesHtml = '';
+          if (weekend.deliverables && weekend.deliverables.length > 0) {
+            deliverablesHtml = weekend.deliverables
+              .map(d => `<div class="deliverable">${d}</div>`)
+              .join('');
+          }
+
+          // Build skills HTML
+          let skillsHtml = '';
+          if (weekend.skills && weekend.skills.length > 0) {
+            skillsHtml = weekend.skills
+              .map(s => `<span class="skill-tag">${s}</span>`)
+              .join('');
+          }
+
+          html += `
             <div class="weekend-block">
               <div class="weekend-header">
                 <div>
@@ -444,83 +520,36 @@
                   <p class="weekend-meta">${weekend.dates} | ${weekend.hours} hours</p>
                 </div>
                 <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                  <div class="status-badge status-${weekend.status}">
-                    ${weekend.status.replace('_', ' ')}
+                  <div class="status-badge status-${status}">
+                    ${status.replace(/_/g, ' ')}
                   </div>
-                  <p style="color: #666; font-weight: bold;">${completedTasks}/${totalTasks} tasks</p>
+                  <p style="color: #666; font-weight: bold;">${completed}/${total} tasks</p>
                 </div>
               </div>
 
               <div class="progress-bar-container">
-                <div class="progress-bar" style="width: ${percentComplete}%">
-                  ${percentComplete}%
+                <div class="progress-bar" style="width: ${percent}%">
+                  ${percent}%
                 </div>
               </div>
 
               <div class="section-title">📋 Tasks</div>
               <div class="task-list">
-                ${tasksHTML}
+                ${tasksHtml}
               </div>
 
               <div class="section-title">✅ Deliverables</div>
-              ${weekend.deliverables.map(d => `<div class="deliverable">${d}</div>`).join('')}
+              ${deliverablesHtml}
 
               <div class="section-title">🎯 Skills</div>
               <div class="skills-tags">
-                ${weekend.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                ${skillsHtml}
               </div>
             </div>
           `;
-
-          container.innerHTML += weekendHTML;
         });
-      }
 
-      // Handle task completion
-      function completeTask(weekendNumber, taskIndex, newStatus) {
-        console.log(`🔘 Task clicked: Weekend ${weekendNumber}, Task ${taskIndex} → ${newStatus}`);
-
-        if (!trackerData) {
-          console.error('❌ No tracker data');
-          return;
-        }
-
-        const weekend = trackerData.roadmap.find(w => w.weekend === weekendNumber);
-        if (!weekend) {
-          console.error(`❌ Weekend ${weekendNumber} not found`);
-          return;
-        }
-
-        if (!weekend.taskStatus) {
-          weekend.taskStatus = weekend.tasks.map(() => 'NOT_STARTED');
-        }
-
-        if (taskIndex >= weekend.taskStatus.length) {
-          console.error(`❌ Task index ${taskIndex} out of bounds`);
-          return;
-        }
-
-        const oldStatus = weekend.taskStatus[taskIndex];
-        weekend.taskStatus[taskIndex] = newStatus;
-        console.log(`✅ Updated: ${oldStatus} → ${newStatus}`);
-
-        // Save and re-render
-        saveProgress();
-        render();
-      }
-
-      // Attach event listeners (if using delegation)
-      function attachEventListeners() {
-        console.log('✅ Event listeners attached');
-      }
-
-      // Initialize on page load
-      window.addEventListener('DOMContentLoaded', init);
-      if (document.readyState === 'loading') {
-        console.log('📄 Waiting for DOM...');
-      } else {
-        console.log('📄 DOM ready, initializing...');
-        init();
+        container.innerHTML = html;
       }
     </script>
   </body>
