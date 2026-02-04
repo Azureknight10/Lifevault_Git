@@ -267,26 +267,41 @@
         const timeline = document.getElementById('timeline');
         timeline.textContent = data.timeline + ' | Target: ' + data.completion_target;
 
-        const completed = data.roadmap.filter(w => w.status === 'COMPLETED').length;
-        const inProgress = data.roadmap.filter(w => w.status === 'IN_PROGRESS').length;
-        const total = data.roadmap.length;
-        const percentComplete = Math.round((completed / total) * 100);
+        // Calculate based on all tasks across all weekends
+        let totalTasks = 0;
+        let completedTasks = 0;
+        let totalHours = 0;
+
+        data.roadmap.forEach(weekend => {
+          totalTasks += weekend.tasks.length;
+          const completed = weekend.taskStatus.filter(s => s === 'COMPLETED').length;
+          completedTasks += completed;
+          
+          // Calculate hours based on task completion percentage
+          const weekendProgress = completed / weekend.tasks.length;
+          const weekendHours = parseInt(weekend.hours.split('-')[0]); // Take lower bound
+          totalHours += Math.round(weekendHours * weekendProgress);
+        });
+
+        const percentComplete = Math.round((completedTasks / totalTasks) * 100);
+        const completedWeekends = data.roadmap.filter(w => w.status === 'COMPLETED').length;
+        const inProgressWeekends = data.roadmap.filter(w => w.status === 'IN_PROGRESS').length;
 
         const summaryHTML = `
           <div class="card">
             <h3>Overall Progress</h3>
             <div class="big-number">${percentComplete}%</div>
-            <p>${completed} of ${total} weekends complete</p>
+            <p>${completedTasks} of ${totalTasks} tasks complete</p>
           </div>
           <div class="card">
             <h3>Hours Invested</h3>
-            <div class="big-number">${completed * 16}</div>
+            <div class="big-number">${totalHours}</div>
             <p>of ${data.estimated_hours} hours</p>
           </div>
           <div class="card">
-            <h3>Current Status</h3>
-            <div class="big-number">${inProgress}</div>
-            <p>weekends in progress</p>
+            <h3>Weekends Status</h3>
+            <div class="big-number">${completedWeekends}</div>
+            <p>${inProgressWeekends} in progress, ${completedWeekends} complete</p>
           </div>
           <div class="card">
             <h3>Difficulty Level</h3>
