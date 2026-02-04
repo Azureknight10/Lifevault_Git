@@ -135,6 +135,48 @@
             background: #f8f9fa;
             border-left: 4px solid #667eea;
             border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-completed {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            text-decoration: line-through;
+            color: #666;
+        }
+
+        .task-in-progress {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .task-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .task-buttons button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .task-buttons .btn-progress {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .task-buttons .btn-complete {
+            background: #28a745;
+            color: white;
+        }
+
+        .task-buttons button:hover {
+            opacity: 0.8;
         }
 
         .skills-tags {
@@ -205,6 +247,13 @@
 
           trackerData = data;
 
+          // Initialize task status if not exists
+          trackerData.roadmap.forEach(weekend => {
+            if (!weekend.taskStatus) {
+              weekend.taskStatus = weekend.tasks.map(() => 'NOT_STARTED');
+            }
+          });
+
           displaySummary(trackerData);
           displayWeekends(trackerData.roadmap);
         } catch (error) {
@@ -254,12 +303,19 @@
         container.innerHTML = '';
 
         roadmap.forEach(weekend => {
-          const percentComplete =
-            weekend.status === 'COMPLETED'
-              ? 100
-              : weekend.status === 'IN_PROGRESS'
-              ? 50
-              : 0;
+          // Calculate percentage based on completed tasks
+          const completedTasks = weekend.taskStatus.filter(s => s === 'COMPLETED').length;
+          const totalTasks = weekend.tasks.length;
+          const percentComplete = Math.round((completedTasks / totalTasks) * 100);
+
+          // Auto-update weekend status based on task completion
+          if (completedTasks === totalTasks) {
+            weekend.status = 'COMPLETED';
+          } else if (completedTasks > 0 || weekend.taskStatus.some(s => s === 'IN_PROGRESS')) {
+            weekend.status = 'IN_PROGRESS';
+          } else {
+            weekend.status = 'NOT_STARTED';
+          }
 
           const weekendHTML = `
             <div class="weekend-block">
@@ -272,14 +328,7 @@
                   <div class="status-badge status-${weekend.status}">
                     ${weekend.status.replace('_', ' ')}
                   </div>
-                  <div style="margin-top: 8px;">
-                    <button onclick="updateStatus(${weekend.weekend}, 'IN_PROGRESS')">
-                      In Progress
-                    </button>
-                    <button onclick="updateStatus(${weekend.weekend}, 'COMPLETED')">
-                      Completed
-                    </button>
-                  </div>
+                  <p style="margin-top: 5px; color: #666;">${completedTasks}/${totalTasks} tasks complete</p>
                 </div>
               </div>
 
@@ -291,14 +340,24 @@
 
               <h4>📋 Tasks (${weekend.tasks.length})</h4>
               <div class="task-list">
-                ${weekend.tasks.slice(0, 5).map(task =>
-                  `<div class="task-item">${task}</div>`
-                ).join('')}
-                ${weekend.tasks.length > 5
-                  ? `<p style="text-align: center; color: #666; margin-top: 10px;">
-                       +${weekend.tasks.length - 5} more tasks...
-                     </p>`
-                  : ''}
+                ${weekend.tasks.map((task, index) => {
+                  const taskStatus = weekend.taskStatus[index];
+                  const statusClass = taskStatus === 'COMPLETED' ? 'task-completed' : 
+                                    taskStatus === 'IN_PROGRESS' ? 'task-in-progress' : '';
+                  return `
+                    <div class="task-item ${statusClass}">
+                      <span>${task}</span>
+                      <div class="task-buttons">
+                        <button class="btn-progress" onclick="updateTaskStatus(${weekend.weekend}, ${index}, 'IN_PROGRESS')">
+                          In Progress
+                        </button>
+                        <button class="btn-complete" onclick="updateTaskStatus(${weekend.weekend}, ${index}, 'COMPLETED')">
+                          Complete
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
               </div>
 
               <h4 style="margin-top: 20px;">✅ Deliverables</h4>
@@ -319,13 +378,13 @@
         });
       }
 
-      function updateStatus(weekendNumber, newStatus) {
+      function updateTaskStatus(weekendNumber, taskIndex, newStatus) {
         if (!trackerData) return;
 
         const wk = trackerData.roadmap.find(w => w.weekend === weekendNumber);
         if (!wk) return;
 
-        wk.status = newStatus;
+        wk.taskStatus[taskIndex] = newStatus;
 
         // Re-render with updated data
         displaySummary(trackerData);
