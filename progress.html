@@ -190,8 +190,11 @@
         <div id="weekendBlocks"></div>
     </div>
 
-        <script>
+    <script>
       console.log('✅ progress tracker script running');
+
+      // keep tracker data in memory so buttons can update it
+      let trackerData = null;
 
       async function loadTracker() {
         console.log('✅ loadTracker called');
@@ -200,8 +203,10 @@
           console.log('✅ fetch status', response.status);
           const data = await response.json();
 
-          displaySummary(data);
-          displayWeekends(data.roadmap);
+          trackerData = data;
+
+          displaySummary(trackerData);
+          displayWeekends(trackerData.roadmap);
         } catch (error) {
           console.error('Error loading tracker:', error);
           document.getElementById('weekendBlocks').innerHTML =
@@ -246,7 +251,7 @@
 
       function displayWeekends(roadmap) {
         const container = document.getElementById('weekendBlocks');
-        container.innerHTML = ''; // clear just in case
+        container.innerHTML = '';
 
         roadmap.forEach(weekend => {
           const percentComplete =
@@ -263,8 +268,18 @@
                   <div class="weekend-title">Weekend ${weekend.weekend}: ${weekend.title}</div>
                   <p style="color: #666;">${weekend.dates} | ${weekend.hours} hours</p>
                 </div>
-                <div class="status-badge status-${weekend.status}">
-                  ${weekend.status.replace('_', ' ')}
+                <div style="text-align: right;">
+                  <div class="status-badge status-${weekend.status}">
+                    ${weekend.status.replace('_', ' ')}
+                  </div>
+                  <div style="margin-top: 8px;">
+                    <button onclick="updateStatus(${weekend.weekend}, 'IN_PROGRESS')">
+                      In Progress
+                    </button>
+                    <button onclick="updateStatus(${weekend.weekend}, 'COMPLETED')">
+                      Completed
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -302,6 +317,19 @@
 
           container.innerHTML += weekendHTML;
         });
+      }
+
+      function updateStatus(weekendNumber, newStatus) {
+        if (!trackerData) return;
+
+        const wk = trackerData.roadmap.find(w => w.weekend === weekendNumber);
+        if (!wk) return;
+
+        wk.status = newStatus;
+
+        // Re-render with updated data
+        displaySummary(trackerData);
+        displayWeekends(trackerData.roadmap);
       }
 
       // Load data on page load
