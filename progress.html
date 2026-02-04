@@ -357,7 +357,7 @@
         console.log('');
         console.log('═══════════════════════════════');
         console.log(`🔘 BUTTON CLICKED`);
-        console.log(`   Weekend: ${weekendNum}`);
+        console.log(`   Weekend: "${weekendNum}"`);
         console.log(`   Task: ${taskIdx}`);
         console.log(`   New Status: ${newStatus}`);
         console.log('═══════════════════════════════');
@@ -369,12 +369,13 @@
 
         const weekend = trackerData.roadmap.find(w => w.weekend === weekendNum);
         if (!weekend) {
-          console.error(`❌ ERROR: Weekend ${weekendNum} not found!`);
+          console.error(`❌ ERROR: Weekend "${weekendNum}" not found!`);
+          console.log('Available weekends:', trackerData.roadmap.map(w => w.weekend));
           return;
         }
 
         if (!weekend.taskStatus) {
-          console.error(`❌ ERROR: Weekend ${weekendNum} has no taskStatus!`);
+          console.error(`❌ ERROR: Weekend "${weekendNum}" has no taskStatus!`);
           return;
         }
 
@@ -485,10 +486,10 @@
               <div class="task-item ${taskClass}">
                 <span>${task}</span>
                 <div class="task-buttons">
-                  <button class="task-btn btn-progress" onclick="updateTask(${weekend.weekend}, ${idx}, 'IN_PROGRESS')">
+                  <button class="task-btn btn-progress" onclick="updateTask('${weekend.weekend}', ${idx}, 'IN_PROGRESS')">
                     In Progress
                   </button>
-                  <button class="task-btn btn-complete" onclick="updateTask(${weekend.weekend}, ${idx}, 'COMPLETED')">
+                  <button class="task-btn btn-complete" onclick="updateTask('${weekend.weekend}', ${idx}, 'COMPLETED')">
                     ✓ Complete
                   </button>
                 </div>
