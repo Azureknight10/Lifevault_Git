@@ -190,112 +190,122 @@
         <div id="weekendBlocks"></div>
     </div>
 
-    <script>
-        async function loadTracker() {
-            try {
-                const response = await fetch('data/lifevault_12week_tracker.json');
-                const data = await response.json();
-                
-                displaySummary(data);
-                displayWeekends(data.roadmap);
-            } catch (error) {
-                console.error('Error loading tracker:', error);
-                document.getElementById('weekendBlocks').innerHTML = 
-                    '<p style="color: white; text-align: center;">Error loading tracker data</p>';
-            }
+        <script>
+      console.log('✅ progress tracker script running');
+
+      async function loadTracker() {
+        console.log('✅ loadTracker called');
+        try {
+          const response = await fetch('data/lifevault_12week_tracker.json');
+          console.log('✅ fetch status', response.status);
+          const data = await response.json();
+
+          displaySummary(data);
+          displayWeekends(data.roadmap);
+        } catch (error) {
+          console.error('Error loading tracker:', error);
+          document.getElementById('weekendBlocks').innerHTML =
+            '<p style="color: white; text-align: center;">Error loading tracker data</p>';
         }
+      }
 
-        function displaySummary(data) {
-            const timeline = document.getElementById('timeline');
-            timeline.textContent = data.timeline + ' | Target: ' + data.completion_target;
+      function displaySummary(data) {
+        const timeline = document.getElementById('timeline');
+        timeline.textContent = data.timeline + ' | Target: ' + data.completion_target;
 
-            const completed = data.roadmap.filter(w => w.status === 'COMPLETED').length;
-            const inProgress = data.roadmap.filter(w => w.status === 'IN_PROGRESS').length;
-            const total = data.roadmap.length;
-            const percentComplete = Math.round((completed / total) * 100);
+        const completed = data.roadmap.filter(w => w.status === 'COMPLETED').length;
+        const inProgress = data.roadmap.filter(w => w.status === 'IN_PROGRESS').length;
+        const total = data.roadmap.length;
+        const percentComplete = Math.round((completed / total) * 100);
 
-            const summaryHTML = `
-                <div class="card">
-                    <h3>Overall Progress</h3>
-                    <div class="big-number">${percentComplete}%</div>
-                    <p>${completed} of ${total} weekends complete</p>
+        const summaryHTML = `
+          <div class="card">
+            <h3>Overall Progress</h3>
+            <div class="big-number">${percentComplete}%</div>
+            <p>${completed} of ${total} weekends complete</p>
+          </div>
+          <div class="card">
+            <h3>Hours Invested</h3>
+            <div class="big-number">${completed * 16}</div>
+            <p>of ${data.estimated_hours} hours</p>
+          </div>
+          <div class="card">
+            <h3>Current Status</h3>
+            <div class="big-number">${inProgress}</div>
+            <p>weekends in progress</p>
+          </div>
+          <div class="card">
+            <h3>Difficulty Level</h3>
+            <div class="big-number">${data.difficulty}</div>
+            <p>out of 10</p>
+          </div>
+        `;
+
+        document.getElementById('summaryCards').innerHTML = summaryHTML;
+      }
+
+      function displayWeekends(roadmap) {
+        const container = document.getElementById('weekendBlocks');
+        container.innerHTML = ''; // clear just in case
+
+        roadmap.forEach(weekend => {
+          const percentComplete =
+            weekend.status === 'COMPLETED'
+              ? 100
+              : weekend.status === 'IN_PROGRESS'
+              ? 50
+              : 0;
+
+          const weekendHTML = `
+            <div class="weekend-block">
+              <div class="weekend-header">
+                <div>
+                  <div class="weekend-title">Weekend ${weekend.weekend}: ${weekend.title}</div>
+                  <p style="color: #666;">${weekend.dates} | ${weekend.hours} hours</p>
                 </div>
-                <div class="card">
-                    <h3>Hours Invested</h3>
-                    <div class="big-number">${completed * 16}</div>
-                    <p>of ${data.estimated_hours} hours</p>
+                <div class="status-badge status-${weekend.status}">
+                  ${weekend.status.replace('_', ' ')}
                 </div>
-                <div class="card">
-                    <h3>Current Status</h3>
-                    <div class="big-number">${inProgress}</div>
-                    <p>weekends in progress</p>
+              </div>
+
+              <div class="progress-bar-container">
+                <div class="progress-bar" style="width: ${percentComplete}%">
+                  ${percentComplete}%
                 </div>
-                <div class="card">
-                    <h3>Difficulty Level</h3>
-                    <div class="big-number">${data.difficulty}</div>
-                    <p>out of 10</p>
-                </div>
-            `;
+              </div>
 
-            document.getElementById('summaryCards').innerHTML = summaryHTML;
-        }
+              <h4>📋 Tasks (${weekend.tasks.length})</h4>
+              <div class="task-list">
+                ${weekend.tasks.slice(0, 5).map(task =>
+                  `<div class="task-item">${task}</div>`
+                ).join('')}
+                ${weekend.tasks.length > 5
+                  ? `<p style="text-align: center; color: #666; margin-top: 10px;">
+                       +${weekend.tasks.length - 5} more tasks...
+                     </p>`
+                  : ''}
+              </div>
 
-        function displayWeekends(roadmap) {
-            const container = document.getElementById('weekendBlocks');
-            
-            roadmap.forEach(weekend => {
-                const percentComplete = weekend.status === 'COMPLETED' ? 100 : 
-                                      weekend.status === 'IN_PROGRESS' ? 50 : 0;
-                
-                const weekendHTML = `
-                    <div class="weekend-block">
-                        <div class="weekend-header">
-                            <div>
-                                <div class="weekend-title">Weekend ${weekend.weekend}: ${weekend.title}</div>
-                                <p style="color: #666;">${weekend.dates} | ${weekend.hours} hours</p>
-                            </div>
-                            <div class="status-badge status-${weekend.status}">
-                                ${weekend.status.replace('_', ' ')}
-                            </div>
-                        </div>
+              <h4 style="margin-top: 20px;">✅ Deliverables</h4>
+              ${weekend.deliverables.map(d =>
+                `<div class="deliverable">${d}</div>`
+              ).join('')}
 
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${percentComplete}%">
-                                ${percentComplete}%
-                            </div>
-                        </div>
+              <h4 style="margin-top: 20px;">🎯 Skills Mastered</h4>
+              <div class="skills-tags">
+                ${weekend.skills.map(skill =>
+                  `<span class="skill-tag">${skill}</span>`
+                ).join('')}
+              </div>
+            </div>
+          `;
 
-                        <h4>📋 Tasks (${weekend.tasks.length})</h4>
-                        <div class="task-list">
-                            ${weekend.tasks.slice(0, 5).map(task => 
-                                `<div class="task-item">${task}</div>`
-                            ).join('')}
-                            ${weekend.tasks.length > 5 ? 
-                                `<p style="text-align: center; color: #666; margin-top: 10px;">
-                                    +${weekend.tasks.length - 5} more tasks...
-                                </p>` : ''}
-                        </div>
+          container.innerHTML += weekendHTML;
+        });
+      }
 
-                        <h4 style="margin-top: 20px;">✅ Deliverables</h4>
-                        ${weekend.deliverables.map(d => 
-                            `<div class="deliverable">${d}</div>`
-                        ).join('')}
-
-                        <h4 style="margin-top: 20px;">🎯 Skills Mastered</h4>
-                        <div class="skills-tags">
-                            ${weekend.skills.map(skill => 
-                                `<span class="skill-tag">${skill}</span>`
-                            ).join('')}
-                        </div>
-                    </div>
-                `;
-                
-                container.innerHTML += weekendHTML;
-            });
-        }
-
-        // Load data on page load
-        loadTracker();
+      // Load data on page load
+      loadTracker();
     </script>
-</body>
+  </body>
 </html>
