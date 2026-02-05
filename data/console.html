@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LifeVault Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #0b1020;
+            color: #f5f5f5;
+        }
+        header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #242b3d;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #111628;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+        header .env-pill {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid #3b425a;
+            color: #9fa6c9;
+        }
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding: 16px 24px 24px;
+        }
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+        .panel {
+            background: #131929;
+            border-radius: 8px;
+            border: 1px solid #242b3d;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .panel h2 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            color: #e5e7ff;
+        }
+        label {
+            font-size: 13px;
+            color: #c3c7e8;
+            display: block;
+            margin-bottom: 4px;
+        }
+        textarea, select, input[type="text"] {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #303853;
+            background: #0b1020;
+            color: #f5f5f5;
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        select {
+            height: 34px;
+        }
+        button {
+            border-radius: 6px;
+            border: none;
+            padding: 8px 14px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: #f9fafb;
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #e5e7ff;
+            border: 1px solid #3b425a;
+        }
+        .row {
+            display: flex;
+            gap: 8px;
+        }
+        .row > div {
+            flex: 1;
+        }
+        .status {
+            font-size: 12px;
+            color: #9fa6c9;
+        }
+        .response-box {
+            background: #0b1020;
+            border-radius: 6px;
+            border: 1px solid #242b3d;
+            padding: 10px;
+            min-height: 120px;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            background: #1e293b;
+            color: #cbd5f5;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+        .small-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #9fa6c9;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>LifeVault Console</h1>
+    <div class="env-pill">Frontend → Orchestrator (HTTP)</div>
+</header>
+
+<main>
+    <!-- LEFT: Request builder -->
+    <section class="panel">
+        <h2>Request</h2>
+
+        <div>
+            <label for="inputText">What do you want LifeVault to do?</label>
+            <textarea id="inputText"
+                      placeholder="Example: Plan my next 7 days to balance coding, workouts, and recovery."></textarea>
+        </div>
+
+        <div class="row">
+            <div>
+                <label for="persona">Persona</label>
+                <select id="persona">
+                    <option value="dev">Developer Shane</option>
+                    <option value="vitality">Vitality Shane</option>
+                    <option value="wisdom">Wisdom Shane</option>
+                </select>
+            </div>
+            <div>
+                <label for="intent">Intent</label>
+                <select id="intent">
+                    <option value="plan_day">Plan day</option>
+                    <option value="plan_sprint">Plan dev sprint</option>
+                    <option value="optimize_energy">Optimize energy</option>
+                    <option value="reflect">Reflect / wisdom</option>
+                    <option value="log_event">Log event</option>
+                    <option value="big_decision">Big decision</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label for="userId">User ID (optional)</label>
+            <input id="userId" type="text" placeholder="e.g., shane-dev-001">
+        </div>
+
+        <div class="row" style="justify-content: space-between; align-items: center;">
+            <button id="runBtn" class="btn-primary">Run with LifeVault</button>
+            <button id="exampleBtn" class="btn-outline">Use example request</button>
+        </div>
+
+        <div class="status" id="statusText">Idle</div>
+    </section>
+
+    <!-- RIGHT: Response viewer -->
+    <section class="panel">
+        <h2>Response</h2>
+
+        <div>
+            <div class="small-label">Final answer</div>
+            <div id="finalResponse" class="response-box">
+                Run a request to see LifeVault orchestrator output here.
+            </div>
+        </div>
+
+        <div>
+            <div class="small-label" style="margin-bottom: 4px;">Agents involved</div>
+            <div id="agentsList"></div>
+        </div>
+    </section>
+</main>
+
+<script>
+    // TODO: replace with your real HTTP endpoint once your Azure Function / API is live
+    const ORCHESTRATOR_ENDPOINT = "https://YOUR_ENDPOINT_HERE/api/orchestrate";
+
+    const runBtn = document.getElementById('runBtn');
+    const exampleBtn = document.getElementById('exampleBtn');
+    const inputText = document.getElementById('inputText');
+    const persona = document.getElementById('persona');
+    const intent = document.getElementById('intent');
+    const userId = document.getElementById('userId');
+    const statusText = document.getElementById('statusText');
+    const finalResponse = document.getElementById('finalResponse');
+    const agentsList = document.getElementById('agentsList');
+
+    exampleBtn.addEventListener('click', () => {
+        inputText.value = "Plan my next 7 days so I can make serious progress on LifeVault, stay on top of MSSA, and not burn out physically.";
+        persona.value = "dev";
+        intent.value = "plan_sprint";
+        statusText.textContent = "Example loaded.";
+    });
+
+    runBtn.addEventListener('click', async () => {
+        const text = inputText.value.trim();
+        if (!text) {
+            alert("Please enter a request for LifeVault.");
+            return;
+        }
+
+        const payload = {
+            userId: userId.value.trim() || "shane-dev-001",
+            persona: persona.value,
+            intent: intent.value,
+            inputText: text,
+            uiContext: {
+                source: "web-console",
+                version: "v1",
+                timestamp: new Date().toISOString()
+            }
+        };
+
+        runBtn.disabled = true;
+        statusText.textContent = "Calling LifeVault orchestrator...";
+        finalResponse.textContent = "Thinking...";
+        agentsList.innerHTML = "";
+
+        try {
+            // If you don't have the endpoint yet, simulate a response:
+            if (ORCHESTRATOR_ENDPOINT.includes("YOUR_ENDPOINT_HERE")) {
+                await new Promise(r => setTimeout(r, 800));
+                finalResponse.textContent =
+                    "This is a demo response. Replace ORCHESTRATOR_ENDPOINT in console.html with your real Azure Function or API URL.\n\n" +
+                    "Payload that would be sent:\n" + JSON.stringify(payload, null, 2);
+                agentsList.innerHTML =
+                    '<span class="badge">Vitality (simulated)</span>' +
+                    '<span class="badge">Analytics (simulated)</span>' +
+                    '<span class="badge">Memory (simulated)</span>' +
+                    '<span class="badge">Wisdom (simulated)</span>';
+                statusText.textContent = "Demo mode: endpoint not configured yet.";
+            } else {
+                const res = await fetch(ORCHESTRATOR_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    throw new Error("HTTP " + res.status + " " + res.statusText);
+                }
+
+                const data = await res.json();
+
+                finalResponse.textContent = data.finalResponse || "(No finalResponse field returned.)";
+
+                agentsList.innerHTML = "";
+                if (Array.isArray(data.agentSummaries)) {
+                    data.agentSummaries.forEach(a => {
+                        const span = document.createElement("span");
+                        span.className = "badge";
+                        span.textContent = a.agent + (a.summary ? " – " + a.summary : "");
+                        agentsList.appendChild(span);
+                    });
+                } else {
+                    agentsList.innerHTML = '<span class="badge">No agent summary data.</span>';
+                }
+
+                statusText.textContent = "Response received.";
+            }
+        } catch (err) {
+            console.error(err);
+            finalResponse.textContent = "Error calling orchestrator: " + err.message;
+            agentsList.innerHTML = '<span class="badge">Error</span>';
+            statusText.textContent = "Error.";
+        } finally {
+            runBtn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>
