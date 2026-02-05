@@ -223,6 +223,42 @@
     </div>
 
     <div id="resources"></div>
+
+    <h2>Add New Resource</h2>
+    <form id="new-resource-form">
+      <label>
+        ID (no spaces):
+        <input type="text" id="res-id" required />
+      </label><br>
+      <label>
+        Title:
+        <input type="text" id="res-title" required />
+      </label><br>
+      <label>
+        Description:
+        <textarea id="res-description" rows="3" required></textarea>
+      </label><br>
+      <label>
+        Image or Video URL:
+        <input type="text" id="res-url" />
+      </label><br>
+      <label>
+        Category:
+        <select id="res-category" required>
+          <option value="emotions">Emotions</option>
+          <option value="personal-growth">Personal Growth</option>
+          <option value="wisdom">Wisdom</option>
+          <option value="physical-health">Physical Health</option>
+          <option value="relationships">Relationships</option>
+          <option value="creation">Creation</option>
+          <option value="spirituality">Spirituality</option>
+          <option value="finance">Finance</option>
+          <option value="career">Career</option>
+        </select>
+      </label><br>
+      <button type="submit">Add Resource Card</button>
+    </form>
+    <hr>
   </div>
 
   <script>
@@ -231,7 +267,7 @@
     let currentSearch = '';
 
     // Load resources from JSON
-    fetch('data/resources.json')
+    fetch('resources.json')
       .then(response => response.json())
       .then(data => {
         allResources = data;
@@ -239,7 +275,7 @@
       })
       .catch(err => {
         document.getElementById('resources').innerHTML = 
-          '<p class="no-results">Error loading resources. Please check that data/resources.json exists.</p>';
+          '<p class="no-results">Error loading resources. Please check that resources.json exists.</p>';
         console.error('Error loading resources:', err);
       });
 
@@ -294,5 +330,48 @@
       renderResources();
     });
   </script>
+
+  <script>
+  function getTodayDisplay() {
+    const d = new Date();
+    return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+  }
+
+  const resourcesContainer = document.getElementById('resources');
+  const form = document.getElementById('new-resource-form');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById('res-id').value.trim();
+    const title = document.getElementById('res-title').value.trim();
+    const description = document.getElementById('res-description').value.trim();
+    const url = document.getElementById('res-url').value.trim();
+    const category = document.getElementById('res-category').value.trim();
+
+    if (!id || !title || !description || !category) {
+      alert('Please fill in ID, Title, Description, and Category.');
+      return;
+    }
+
+    const card = document.createElement('article');
+    card.className = 'card';
+
+    const linkHref = url || `resource.html?id=${encodeURIComponent(id)}`;
+    const linkTarget = url ? '_blank' : '_self';
+
+    card.innerHTML = `
+      <h3><a href="${linkHref}" target="${linkTarget}" rel="noopener noreferrer">${title}</a></h3>
+      <p class="description">${description}</p>
+      <div class="meta">
+        <span>${getTodayDisplay()}</span>
+        <span class="category-badge">${category}</span>
+      </div>
+    `;
+
+    resourcesContainer.prepend(card);
+    form.reset();
+  });
+</script>
 </body>
 </html>

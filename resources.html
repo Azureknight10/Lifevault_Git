@@ -321,6 +321,44 @@
     <main>
       <section class="resources-grid" id="resourcesGrid" aria-live="polite"></section>
     </main>
+
+    <section aria-label="Add new resource">
+      <h2>Add New Resource</h2>
+      <form id="new-resource-form">
+        <label>
+          ID (no spaces):
+          <input type="text" id="res-id" required />
+        </label><br>
+        <label>
+          Title:
+          <input type="text" id="res-title" required />
+        </label><br>
+        <label>
+          Description:
+          <textarea id="res-description" rows="3" required></textarea>
+        </label><br>
+        <label>
+          Image or Video URL:
+          <input type="text" id="res-url" />
+        </label><br>
+        <label>
+          Category:
+          <select id="res-category" required>
+            <option value="emotions">Emotions</option>
+            <option value="personal growth">Personal Growth</option>
+            <option value="wisdom">Wisdom</option>
+            <option value="physical health">Physical Health</option>
+            <option value="relationships">Relationships</option>
+            <option value="creation">Creation</option>
+            <option value="spirituality">Spirituality</option>
+            <option value="finance">Finance</option>
+            <option value="career">Career</option>
+          </select>
+        </label><br>
+        <button type="submit">Add Resource Card</button>
+      </form>
+      <hr>
+    </section>
   </div>
 
   <script>
@@ -328,6 +366,7 @@
   const searchInput = document.getElementById("searchInput");
   const categoryFilter = document.getElementById("categoryFilter");
   const resourcesGrid = document.getElementById("resourcesGrid");
+  const form = document.getElementById("new-resource-form");
 
   let resources = [];
   let activeCategory = "all";
@@ -485,6 +524,33 @@ function renderResources() {
 
     btn.classList.add("active");
     activeCategory = btn.dataset.category;
+    renderResources();
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("res-id").value.trim();
+    const title = document.getElementById("res-title").value.trim();
+    const description = document.getElementById("res-description").value.trim();
+    const url = document.getElementById("res-url").value.trim();
+    const category = document.getElementById("res-category").value.trim();
+
+    if (!id || !title || !description || !category) {
+      alert("Please fill in ID, Title, Description, and Category.");
+      return;
+    }
+
+    resources.unshift({
+      id,
+      title,
+      description,
+      url,
+      category,
+      date: new Date().toISOString(),
+    });
+
+    form.reset();
     renderResources();
   });
 
