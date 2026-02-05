@@ -78,6 +78,7 @@
 
   <script>
     const resourcesUrl = "data/resources.json";
+    const LOCAL_STORAGE_KEY = "lifevault.resources";
 
     function getIdFromQuery() {
       const params = new URLSearchParams(window.location.search);
@@ -101,6 +102,26 @@
       return url;
     }
 
+    function loadLocalResources() {
+      try {
+        const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        console.warn("Unable to read local resources.", err);
+        return [];
+      }
+    }
+
+    function mergeResources(base, extras) {
+      const byId = new Map();
+      [...base, ...extras].forEach((item) => {
+        if (!item || !item.id) return;
+        byId.set(item.id, item);
+      });
+      return Array.from(byId.values());
+    }
+
     async function loadResource() {
       const id = getIdFromQuery();
       const container = document.getElementById("resourceContainer");
@@ -114,7 +135,8 @@
         const res = await fetch(resourcesUrl);
         if (!res.ok) throw new Error("Failed to load resources.json");
         const data = await res.json();
-        const items = Array.isArray(data) ? data : [];
+        const localItems = loadLocalResources();
+        const items = mergeResources(Array.isArray(data) ? data : [], localItems);
         const item = items.find((r) => r.id === id);
 
         if (!item) {
