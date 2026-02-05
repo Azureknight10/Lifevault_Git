@@ -363,6 +363,7 @@
 
   <script>
   const resourcesUrl = "data/resources.json";
+  const LOCAL_STORAGE_KEY = "lifevault.resources";
   const searchInput = document.getElementById("searchInput");
   const categoryFilter = document.getElementById("categoryFilter");
   const resourcesGrid = document.getElementById("resourcesGrid");
@@ -372,12 +373,41 @@
   let activeCategory = "all";
   let searchTerm = "";
 
+  function loadLocalResources() {
+    try {
+      const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+      console.warn("Unable to read local resources.", err);
+      return [];
+    }
+  }
+
+  function saveLocalResources(items) {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(items));
+    } catch (err) {
+      console.warn("Unable to save local resources.", err);
+    }
+  }
+
+  function mergeResources(base, extras) {
+    const byId = new Map();
+    [...base, ...extras].forEach((item) => {
+      if (!item || !item.id) return;
+      byId.set(item.id, item);
+    });
+    return Array.from(byId.values());
+  }
+
   async function loadResources() {
     try {
       const res = await fetch(resourcesUrl);
       if (!res.ok) throw new Error("Failed to load resources.json");
       const data = await res.json();
-      resources = Array.isArray(data) ? data : [];
+      const localItems = loadLocalResources();
+      resources = mergeResources(Array.isArray(data) ? data : [], localItems);
       renderResources();
     } catch (err) {
       resourcesGrid.innerHTML = `
@@ -541,14 +571,20 @@ function renderResources() {
       return;
     }
 
-    resources.unshift({
+    const newItem = {
       id,
       title,
       description,
       url,
       category,
       date: new Date().toISOString(),
-    });
+    };
+
+    const localItems = loadLocalResources();
+    localItems.unshift(newItem);
+    saveLocalResources(localItems);
+
+    resources = mergeResources(resources, [newItem]);
 
     form.reset();
     renderResources();
