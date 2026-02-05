@@ -67,7 +67,7 @@
     }
 
     header {
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
 
     header h1 {
@@ -81,12 +81,79 @@
       color: var(--muted);
     }
 
+    .top-layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .top-left {
+      flex: 1 1 520px;
+      min-width: 280px;
+    }
+
+    .add-resource-panel {
+      flex: 0 1 320px;
+      min-width: 280px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .add-resource-panel h2 {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .add-resource-panel label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .add-resource-panel input,
+    .add-resource-panel textarea,
+    .add-resource-panel select {
+      width: 100%;
+      margin-top: 6px;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: rgba(5, 6, 8, 0.92);
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .add-resource-panel button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px 12px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--accent);
+      color: #0b0c10;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, filter 0.2s ease;
+    }
+
+    .add-resource-panel button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
     .controls {
       display: flex;
       flex-wrap: wrap;
       gap: 14px;
       align-items: center;
-      margin-bottom: 18px;
+      margin-bottom: 0;
       padding: 14px;
       border-radius: var(--radius-lg);
       background: linear-gradient(120deg, rgba(143, 123, 255, 0.18), transparent);
@@ -288,77 +355,82 @@
       <span>Back to Vault</span>
     </a>
 
-    <header>
-      <div class="pill">Lifevault</div>
-      <h1>Resources</h1>
-      <p>Your curated collection of links, quotes, and anchors for daily growth.</p>
-    </header>
+    <div class="top-layout">
+      <div class="top-left">
+        <header>
+          <div class="pill">Lifevault</div>
+          <h1>Resources</h1>
+          <p>Your curated collection of links, quotes, and anchors for daily growth.</p>
+        </header>
 
-    <section class="controls" aria-label="Resource controls">
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input
-          id="searchInput"
-          class="search-input"
-          type="search"
-          placeholder="Search resources by title or description..."
-          aria-label="Search resources"
-        />
+        <section class="controls" aria-label="Resource controls">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input
+              id="searchInput"
+              class="search-input"
+              type="search"
+              placeholder="Search resources by title or description..."
+              aria-label="Search resources"
+            />
+          </div>
+          <div class="category-filter" id="categoryFilter" aria-label="Filter by category">
+            <button type="button" class="filter-chip active" data-category="all">All</button>
+            <button type="button" class="filter-chip" data-category="physical health">Physical Health</button>
+            <button type="button" class="filter-chip" data-category="relationships">Relationships</button>
+            <button type="button" class="filter-chip" data-category="personal growth">Personal Growth</button>
+            <button type="button" class="filter-chip" data-category="creation">Creation</button>
+            <button type="button" class="filter-chip" data-category="spirituality">Spirituality</button>
+            <button type="button" class="filter-chip" data-category="emotions">Emotions</button>
+            <button type="button" class="filter-chip" data-category="finance">Finance</button>
+            <button type="button" class="filter-chip" data-category="career">Career</button>
+          </div>
+        </section>
       </div>
-      <div class="category-filter" id="categoryFilter" aria-label="Filter by category">
-        <button type="button" class="filter-chip active" data-category="all">All</button>
-        <button type="button" class="filter-chip" data-category="physical health">Physical Health</button>
-        <button type="button" class="filter-chip" data-category="relationships">Relationships</button>
-        <button type="button" class="filter-chip" data-category="personal growth">Personal Growth</button>
-        <button type="button" class="filter-chip" data-category="creation">Creation</button>
-        <button type="button" class="filter-chip" data-category="spirituality">Spirituality</button>
-        <button type="button" class="filter-chip" data-category="emotions">Emotions</button>
-        <button type="button" class="filter-chip" data-category="finance">Finance</button>
-        <button type="button" class="filter-chip" data-category="career">Career</button>
-      </div>
-    </section>
+
+      <section class="add-resource-panel" aria-label="Add new resource">
+        <h2>Add New Resource</h2>
+        <form id="new-resource-form">
+          <label>
+            ID (no spaces):
+            <input type="text" id="res-id" required />
+          </label>
+          <label>
+            Title:
+            <input type="text" id="res-title" required />
+          </label>
+          <label>
+            Description:
+            <textarea id="res-description" rows="3" required></textarea>
+          </label>
+          <label>
+            Image or Video URL:
+            <input type="text" id="res-url" />
+          </label>
+          <label>
+            Category:
+            <select id="res-category" required>
+              <option value="emotions">Emotions</option>
+              <option value="personal growth">Personal Growth</option>
+              <option value="wisdom">Wisdom</option>
+              <option value="physical health">Physical Health</option>
+              <option value="relationships">Relationships</option>
+              <option value="creation">Creation</option>
+              <option value="spirituality">Spirituality</option>
+              <option value="finance">Finance</option>
+              <option value="career">Career</option>
+            </select>
+          </label>
+          <button type="submit">Add Resource Card</button>
+        </form>
+      </section>
+    </div>
 
     <main>
       <section class="resources-grid" id="resourcesGrid" aria-live="polite"></section>
     </main>
 
-    <section aria-label="Add new resource">
-      <h2>Add New Resource</h2>
-      <form id="new-resource-form">
-        <label>
-          ID (no spaces):
-          <input type="text" id="res-id" required />
-        </label><br>
-        <label>
-          Title:
-          <input type="text" id="res-title" required />
-        </label><br>
-        <label>
-          Description:
-          <textarea id="res-description" rows="3" required></textarea>
-        </label><br>
-        <label>
-          Image or Video URL:
-          <input type="text" id="res-url" />
-        </label><br>
-        <label>
-          Category:
-          <select id="res-category" required>
-            <option value="emotions">Emotions</option>
-            <option value="personal growth">Personal Growth</option>
-            <option value="wisdom">Wisdom</option>
-            <option value="physical health">Physical Health</option>
-            <option value="relationships">Relationships</option>
-            <option value="creation">Creation</option>
-            <option value="spirituality">Spirituality</option>
-            <option value="finance">Finance</option>
-            <option value="career">Career</option>
-          </select>
-        </label><br>
-        <button type="submit">Add Resource Card</button>
-      </form>
-      <hr>
-    </section>
+    <hr>
   </div>
 
   <script>
