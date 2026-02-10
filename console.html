@@ -139,10 +139,29 @@
 <body>
 <header>
     <h1>LifeVault Console</h1>
-    <div class="env-pill">Frontend → Orchestrator / Meal Log (HTTP)</div>
+    <div class="env-pill">Frontend → Orchestrator / Meal Log / Fasting (HTTP)</div>
 </header>
 
 <main>
+    <!-- Fasting Tracker -->
+    <section class="panel">
+        <h2>Fasting Tracker</h2>
+
+        <div class="row" style="justify-content: space-between; align-items: center;">
+            <button id="startFastBtn" class="btn-primary">Start fast</button>
+            <button id="endFastBtn" class="btn-outline">End fast</button>
+        </div>
+
+        <div class="status" id="fastStatus">Not fasting.</div>
+
+        <div>
+            <div class="small-label">Current fasting stage</div>
+            <div id="fastStage" class="response-box">
+                When you start a fast, you’ll see an hour‑by‑hour description of what’s happening in your body here.
+            </div>
+        </div>
+    </section>
+
     <!-- Quick Meal Log -->
     <section class="panel">
         <h2>Quick Meal Log (direct to Azure)</h2>
@@ -243,7 +262,7 @@
     const ORCHESTRATOR_ENDPOINT = "http://localhost:3000/api/orchestrate";
 
     // Direct meal logging endpoint (same logMeal Azure Function used in your tests)
-    const MEAL_LOG_ENDPOINT = "https://lifevault-api.azurewebsites.net/api/logMeal"; // [cite:3]
+    const MEAL_LOG_ENDPOINT = "https://lifevault-api.azurewebsites.net/api/logMeal";
 
     const runBtn = document.getElementById('runBtn');
     const exampleBtn = document.getElementById('exampleBtn');
@@ -261,6 +280,94 @@
     const mealUserId  = document.getElementById('mealUserId');
     const mealItems   = document.getElementById('mealItems');
     const mealStatus  = document.getElementById('mealStatus');
+
+    // Fasting tracker elements
+    const startFastBtn = document.getElementById('startFastBtn');
+    const endFastBtn   = document.getElementById('endFastBtn');
+    const fastStatus   = document.getElementById('fastStatus');
+    const fastStage    = document.getElementById('fastStage');
+
+    let fastTimerInterval = null;
+
+    function getFastingDescription(hours) {
+        if (hours < 0.1) {
+            return "You’re not in a fast yet. Once you start, you’ll see what’s happening in your body hour by hour based on typical intermittent fasting physiology.";
+        } else if (hours < 4) {
+            return "0–4 hours fasted: You’re in the post‑meal state. Digestion and absorption are active, blood sugar and insulin are elevated, and you’re primarily burning the food from your last meal. A mild ‘food coma’ or energy dip can happen if that meal was large or high in refined carbs.";
+        } else if (hours < 8) {
+            return "4–8 hours fasted: Insulin is falling and your body is finishing the last of the meal‑derived glucose. Your liver releases stored glycogen to keep blood sugar stable. Cravings often fade and energy becomes steadier than right after eating.";
+        } else if (hours < 12) {
+            return "8–12 hours fasted: You’re in a late post‑absorptive phase. Your body increasingly taps liver glycogen and starts ramping up fat breakdown. Growth‑supporting hormones rise relative to the fed state, helping preserve lean mass. Hunger usually comes in waves that pass if you ride them out for 10–20 minutes.";
+        } else if (hours < 16) {
+            return "12–16 hours fasted: You’re shifting more toward fat‑led metabolism. Glycogen is lower, so you’re burning more stored fat and producing more ketones. Many people experience clearer thinking and steadier focus here, with lower inflammatory signals than in a constant snacking pattern.";
+        } else if (hours < 20) {
+            return "16–20 hours fasted: You’re in a deeper fasting window. Fat burning is prominent, ketones provide more brain fuel, and cellular clean‑up processes like autophagy begin to ramp up compared with normal feeding. This is where a ‘fasting high’ is common—lighter body feeling, sharp mind, and less reactive hunger.";
+        } else if (hours < 24) {
+            return "20–24 hours fasted: You’re relying heavily on stored fat and ketones, with very low insulin and typically improved insulin sensitivity compared to frequent grazing. Stress‑response pathways help maintain alertness and protect lean tissue. Cellular repair and recycling processes are more active than baseline, one proposed mechanism for fasting’s long‑term health effects.";
+        } else if (hours < 48) {
+            return "24–48 hours fasted: You’re solidly in extended fasting. Fat and ketones are the dominant fuels, liver glycogen is largely depleted, and autophagy and other cellular recycling processes remain elevated compared with normal eating. Many people report pronounced mental clarity and a very light, empty‑but‑energized body sensation during this window.";
+        } else if (hours < 72) {
+            return "48–72 hours fasted: Ketone levels are typically high, and fat stores are the primary energy source. Cellular stress‑response pathways, including autophagy and antioxidant defenses, stay strongly engaged. This window is often associated with a deep internal reset feeling as your body continues prioritizing repair and cleanup over digestion.";
+        } else if (hours < 168) { // up to 7 days
+            return "72 hours to 7 days fasted: You’re in prolonged water‑fast territory. Body fat becomes the main calorie source, ketones fuel most brain function, and multiple hormonal and cellular repair systems operate in a sustained, fasting‑adapted mode. This period is often described as a powerful reset for appetite, food habits, and the relationship between mental clarity and energy.";
+        } else if (hours < 240) { // 7–10 days
+            return "7–10 days fasted: You are in a very deep, extended fasting state. Your metabolism is thoroughly adapted to running on stored fat and ketones, and long‑term repair‑oriented processes remain active. Many people notice a profound shift in how they perceive hunger, taste, and their overall sense of mental and emotional clarity during this phase.";
+        } else {
+            return "10+ days fasted: This represents an extreme duration where fat and ketones carry almost all energy needs and fasting‑adapted hormonal and cellular patterns are sustained over many days. It is often described as a period of intense inner reset, with ongoing emphasis on repair, conservation, and highly efficient use of body fuel reserves.";
+        }
+    }
+
+    function updateFastingUI() {
+        const stored = localStorage.getItem("lifevault.fastStart");
+        if (!stored) {
+            fastStatus.textContent = "Not fasting.";
+            fastStage.textContent = "When you start a fast, you’ll see an hour‑by‑hour description of what’s happening in your body here.";
+            return;
+        }
+        const startTime = new Date(stored);
+        const now = new Date();
+        const diffMs = now - startTime;
+        if (diffMs <= 0) {
+            fastStatus.textContent = "Not fasting.";
+            fastStage.textContent = "When you start a fast, you’ll see an hour‑by‑hour description of what’s happening in your body here.";
+            return;
+        }
+        const hours = diffMs / 3600000;
+        const wholeHours = Math.floor(hours);
+        const minutes = Math.floor((hours - wholeHours) * 60);
+
+        fastStatus.textContent = `Fasting for ${wholeHours}h ${minutes}m (since ${startTime.toLocaleTimeString()}).`;
+        fastStage.textContent = getFastingDescription(hours);
+    }
+
+    function startFastingTimer() {
+        if (fastTimerInterval) clearInterval(fastTimerInterval);
+        updateFastingUI();
+        fastTimerInterval = setInterval(updateFastingUI, 60000); // update every minute
+    }
+
+    // Initialize fasting state on load
+    document.addEventListener("DOMContentLoaded", () => {
+        const stored = localStorage.getItem("lifevault.fastStart");
+        if (stored) {
+            startFastingTimer();
+        } else {
+            updateFastingUI();
+        }
+    });
+
+    startFastBtn.addEventListener("click", () => {
+        const nowIso = new Date().toISOString();
+        localStorage.setItem("lifevault.fastStart", nowIso);
+        startFastingTimer();
+    });
+
+    endFastBtn.addEventListener("click", () => {
+        localStorage.removeItem("lifevault.fastStart");
+        if (fastTimerInterval) clearInterval(fastTimerInterval);
+        fastStatus.textContent = "Fast ended.";
+        fastStage.textContent = "Fast ended. When you start a new fast, this panel will show your hour‑by‑hour physiology again.";
+    });
 
     exampleBtn.addEventListener('click', () => {
         inputText.value = "Plan my next 7 days so I can make serious progress on LifeVault, stay on top of MSSA, and not burn out physically.";
@@ -362,8 +469,8 @@
             timestamp: new Date().toISOString(),
             mealType,
             foodItems: items,
-            gradeAnalysis: ""  // let backend/agent fill or leave blank
-        }; // matches the structure you already logged into MealLog.[cite:2][cite:4][cite:5]
+            gradeAnalysis: ""
+        };
 
         mealLogBtn.disabled = true;
         mealStatus.textContent = "Logging meal...";
