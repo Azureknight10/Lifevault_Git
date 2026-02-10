@@ -6,150 +6,301 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { box-sizing: border-box; }
+
+        :root {
+            --bg: #020617;
+            --bg-gradient: radial-gradient(circle at top, #1d283a 0, #020617 55%);
+            --glass: rgba(15, 23, 42, 0.78);
+            --glass-border: rgba(148, 163, 184, 0.18);
+            --glass-shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
+            --accent: #38bdf8;
+            --accent-soft: rgba(56, 189, 248, 0.25);
+            --accent-strong: rgba(56, 189, 248, 0.65);
+            --text-main: #e5e7eb;
+            --text-subtle: #9ca3af;
+            --pill-bg: rgba(15, 23, 42, 0.9);
+        }
+
         body {
             margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #0b1020;
-            color: #f5f5f5;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 0% -20%, rgba(56, 189, 248, 0.12) 0, transparent 55%),
+                radial-gradient(circle at 100% 120%, rgba(94, 234, 212, 0.16) 0, transparent 55%),
+                var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
         }
+
         header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
             padding: 16px 24px;
-            border-bottom: 1px solid #242b3d;
+            border-bottom: 1px solid rgba(31, 41, 55, 0.85);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #111628;
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
+            backdrop-filter: blur(22px);
         }
+
         header h1 {
             margin: 0;
             font-size: 20px;
+            letter-spacing: 0.03em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        header h1 span.logo-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 20%, #e0f2fe 0, #38bdf8 45%, #0ea5e9 100%);
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.8);
+        }
+
         header .env-pill {
             font-size: 12px;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 999px;
-            border: 1px solid #3b425a;
-            color: #9fa6c9;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: var(--text-subtle);
+            background: var(--pill-bg);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
+
+        header .env-pill::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 20%, #bbf7d0 0, #22c55e 50%, #16a34a 100%);
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+        }
+
         main {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            padding: 16px 24px 24px;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.05fr);
+            gap: 18px;
+            padding: 18px 24px 32px;
         }
-        @media (max-width: 900px) {
+
+        @media (max-width: 1100px) {
             main {
                 grid-template-columns: 1fr;
             }
         }
+
         .panel {
-            background: #131929;
-            border-radius: 8px;
-            border: 1px solid #242b3d;
-            padding: 16px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.86), rgba(15, 23, 42, 0.78));
+            border-radius: 18px;
+            border: 1px solid var(--glass-border);
+            padding: 16px 16px 18px;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: blur(18px);
+            position: relative;
+            overflow: hidden;
         }
+
+        .panel::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            border-radius: 18px;
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            pointer-events: none;
+        }
+
         .panel h2 {
             margin: 0 0 4px 0;
-            font-size: 16px;
-            color: #e5e7ff;
+            font-size: 15px;
+            color: #f9fafb;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
         }
+
+        .panel h2 span.pill {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: var(--text-subtle);
+            text-transform: none;
+        }
+
         label {
-            font-size: 13px;
-            color: #c3c7e8;
+            font-size: 12px;
+            color: #cbd5f5;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
+
         textarea, select, input[type="text"] {
             width: 100%;
-            border-radius: 6px;
-            border: 1px solid #303853;
-            background: #0b1020;
-            color: #f5f5f5;
-            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(30, 64, 175, 0.45);
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.96));
+            color: #f9fafb;
+            padding: 9px 11px;
             font-size: 14px;
+            outline: none;
+            transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
         }
+
         textarea {
             min-height: 120px;
             resize: vertical;
         }
+
         select {
-            height: 34px;
+            height: 36px;
         }
+
+        textarea:focus,
+        select:focus,
+        input[type="text"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.45);
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.99), rgba(15, 23, 42, 0.97));
+        }
+
         button {
-            border-radius: 6px;
+            border-radius: 999px;
             border: none;
-            padding: 8px 14px;
-            font-size: 14px;
+            padding: 8px 16px;
+            font-size: 13px;
             cursor: pointer;
+            transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease, color 120ms ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
+
         .btn-primary {
-            background: #2563eb;
+            background: radial-gradient(circle at 10% 0, var(--accent-strong), #0ea5e9);
             color: #f9fafb;
+            box-shadow: 0 12px 32px rgba(56, 189, 248, 0.35);
+            border: 1px solid rgba(56, 189, 248, 0.5);
         }
+
+        .btn-primary:hover {
+            transform: translateY(-0.5px);
+            box-shadow: 0 16px 40px rgba(56, 189, 248, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0.5px);
+            box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
+        }
+
         .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            box-shadow: none;
         }
+
         .btn-outline {
-            background: transparent;
-            color: #e5e7ff;
-            border: 1px solid #3b425a;
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.96));
+            color: var(--text-main);
+            border: 1px solid rgba(148, 163, 184, 0.4);
         }
+
+        .btn-outline:hover {
+            border-color: rgba(148, 163, 184, 0.7);
+            transform: translateY(-0.5px);
+        }
+
         .row {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
+
         .row > div {
             flex: 1;
         }
+
         .status {
-            font-size: 12px;
-            color: #9fa6c9;
+            font-size: 11px;
+            color: var(--text-subtle);
         }
+
         .response-box {
-            background: #0b1020;
-            border-radius: 6px;
-            border: 1px solid #242b3d;
-            padding: 10px;
+            background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.96));
+            border-radius: 12px;
+            border: 1px solid rgba(30, 64, 175, 0.45);
+            padding: 10px 11px;
             min-height: 120px;
             white-space: pre-wrap;
             font-size: 14px;
+            line-height: 1.45;
         }
+
         .badge {
-            display: inline-block;
-            padding: 2px 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 9px;
             border-radius: 999px;
             font-size: 11px;
-            background: #1e293b;
+            background: radial-gradient(circle at top, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.9));
             color: #cbd5f5;
+            border: 1px solid rgba(148, 163, 184, 0.35);
             margin-right: 4px;
             margin-bottom: 4px;
         }
+
+        .badge::before {
+            content: "";
+            width: 5px;
+            height: 5px;
+            border-radius: 999px;
+            background: var(--accent);
+        }
+
         .small-label {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.08em;
             color: #9fa6c9;
         }
     </style>
 </head>
 <body>
 <header>
-    <h1>LifeVault Console</h1>
-    <div class="env-pill">Frontend → Orchestrator / Meal Log / Fasting (HTTP)</div>
+    <h1>
+        <span class="logo-dot"></span>
+        LifeVault Console
+    </h1>
+    <div class="env-pill">Frontend → Orchestrator · Vitality · Fasting</div>
 </header>
 
 <main>
     <!-- Fasting Tracker -->
     <section class="panel">
-        <h2>Fasting Tracker</h2>
+        <h2>
+            Fasting Tracker
+            <span class="pill">Metabolic timeline</span>
+        </h2>
 
         <div class="row" style="justify-content: space-between; align-items: center;">
-            <button id="startFastBtn" class="btn-primary">Start fast</button>
-            <button id="endFastBtn" class="btn-outline">End fast</button>
+            <button id="startFastBtn" class="btn-primary">
+                Start fast
+            </button>
+            <button id="endFastBtn" class="btn-outline">
+                End fast
+            </button>
         </div>
 
         <div class="status" id="fastStatus">Not fasting.</div>
@@ -157,14 +308,17 @@
         <div>
             <div class="small-label">Current fasting stage</div>
             <div id="fastStage" class="response-box">
-                When you start a fast, you’ll see an hour‑by‑hour description of what’s happening in your body here.
+                When you start a fast, you’ll see a time‑aligned description of what’s happening in your body across the fast.
             </div>
         </div>
     </section>
 
     <!-- Quick Meal Log -->
     <section class="panel">
-        <h2>Quick Meal Log (direct to Azure)</h2>
+        <h2>
+            Quick Meal Log
+            <span class="pill">Direct to Azure · MealLog</span>
+        </h2>
 
         <div class="row">
             <div>
@@ -196,7 +350,10 @@
 
     <!-- LEFT: Request builder -->
     <section class="panel">
-        <h2>Request</h2>
+        <h2>
+            Orchestrator Request
+            <span class="pill">Multi‑agent planner</span>
+        </h2>
 
         <div>
             <label for="inputText">What do you want LifeVault to do?</label>
@@ -241,7 +398,10 @@
 
     <!-- RIGHT: Response viewer -->
     <section class="panel">
-        <h2>Response</h2>
+        <h2>
+            Orchestrator Response
+            <span class="pill">Agents · Synthesis</span>
+        </h2>
 
         <div>
             <div class="small-label">Final answer</div>
@@ -258,10 +418,7 @@
 </main>
 
 <script>
-    // Orchestrator HTTP endpoint
     const ORCHESTRATOR_ENDPOINT = "http://localhost:3000/api/orchestrate";
-
-    // Direct meal logging endpoint (same logMeal Azure Function used in your tests)
     const MEAL_LOG_ENDPOINT = "https://lifevault-api.azurewebsites.net/api/logMeal";
 
     const runBtn = document.getElementById('runBtn');
@@ -274,14 +431,12 @@
     const finalResponse = document.getElementById('finalResponse');
     const agentsList = document.getElementById('agentsList');
 
-    // Quick meal log elements
     const mealLogBtn  = document.getElementById('mealLogBtn');
     const mealTypeSel = document.getElementById('mealType');
     const mealUserId  = document.getElementById('mealUserId');
     const mealItems   = document.getElementById('mealItems');
     const mealStatus  = document.getElementById('mealStatus');
 
-    // Fasting tracker elements
     const startFastBtn = document.getElementById('startFastBtn');
     const endFastBtn   = document.getElementById('endFastBtn');
     const fastStatus   = document.getElementById('fastStatus');
@@ -308,9 +463,9 @@
             return "24–48 hours fasted: You’re solidly in extended fasting. Fat and ketones are the dominant fuels, liver glycogen is largely depleted, and autophagy and other cellular recycling processes remain elevated compared with normal eating. Many people report pronounced mental clarity and a very light, empty‑but‑energized body sensation during this window.";
         } else if (hours < 72) {
             return "48–72 hours fasted: Ketone levels are typically high, and fat stores are the primary energy source. Cellular stress‑response pathways, including autophagy and antioxidant defenses, stay strongly engaged. This window is often associated with a deep internal reset feeling as your body continues prioritizing repair and cleanup over digestion.";
-        } else if (hours < 168) { // up to 7 days
+        } else if (hours < 168) {
             return "72 hours to 7 days fasted: You’re in prolonged water‑fast territory. Body fat becomes the main calorie source, ketones fuel most brain function, and multiple hormonal and cellular repair systems operate in a sustained, fasting‑adapted mode. This period is often described as a powerful reset for appetite, food habits, and the relationship between mental clarity and energy.";
-        } else if (hours < 240) { // 7–10 days
+        } else if (hours < 240) {
             return "7–10 days fasted: You are in a very deep, extended fasting state. Your metabolism is thoroughly adapted to running on stored fat and ketones, and long‑term repair‑oriented processes remain active. Many people notice a profound shift in how they perceive hunger, taste, and their overall sense of mental and emotional clarity during this phase.";
         } else {
             return "10+ days fasted: This represents an extreme duration where fat and ketones carry almost all energy needs and fasting‑adapted hormonal and cellular patterns are sustained over many days. It is often described as a period of intense inner reset, with ongoing emphasis on repair, conservation, and highly efficient use of body fuel reserves.";
@@ -321,7 +476,7 @@
         const stored = localStorage.getItem("lifevault.fastStart");
         if (!stored) {
             fastStatus.textContent = "Not fasting.";
-            fastStage.textContent = "When you start a fast, you’ll see an hour‑by‑hour description of what’s happening in your body here.";
+            fastStage.textContent = "When you start a fast, you’ll see a time‑aligned description of what’s happening in your body across the fast.";
             return;
         }
         const startTime = new Date(stored);
@@ -329,7 +484,7 @@
         const diffMs = now - startTime;
         if (diffMs <= 0) {
             fastStatus.textContent = "Not fasting.";
-            fastStage.textContent = "When you start a fast, you’ll see an hour‑by‑hour description of what’s happening in your body here.";
+            fastStage.textContent = "When you start a fast, you’ll see a time‑aligned description of what’s happening in your body across the fast.";
             return;
         }
         const hours = diffMs / 3600000;
@@ -343,10 +498,9 @@
     function startFastingTimer() {
         if (fastTimerInterval) clearInterval(fastTimerInterval);
         updateFastingUI();
-        fastTimerInterval = setInterval(updateFastingUI, 60000); // update every minute
+        fastTimerInterval = setInterval(updateFastingUI, 60000);
     }
 
-    // Initialize fasting state on load
     document.addEventListener("DOMContentLoaded", () => {
         const stored = localStorage.getItem("lifevault.fastStart");
         if (stored) {
@@ -366,7 +520,7 @@
         localStorage.removeItem("lifevault.fastStart");
         if (fastTimerInterval) clearInterval(fastTimerInterval);
         fastStatus.textContent = "Fast ended.";
-        fastStage.textContent = "Fast ended. When you start a new fast, this panel will show your hour‑by‑hour physiology again.";
+        fastStage.textContent = "Fast ended. When you start a new fast, this panel will show your fasting physiology again.";
     });
 
     exampleBtn.addEventListener('click', () => {
@@ -453,7 +607,6 @@
         }
     });
 
-    // Quick Meal Log handler – posts directly to logMeal Azure Function
     mealLogBtn.addEventListener('click', async () => {
         const items = mealItems.value.trim();
         if (!items) {
