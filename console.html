@@ -139,10 +139,42 @@
 <body>
 <header>
     <h1>LifeVault Console</h1>
-    <div class="env-pill">Frontend → Orchestrator (HTTP)</div>
+    <div class="env-pill">Frontend → Orchestrator / Meal Log (HTTP)</div>
 </header>
 
 <main>
+    <!-- Quick Meal Log -->
+    <section class="panel">
+        <h2>Quick Meal Log (direct to Azure)</h2>
+
+        <div class="row">
+            <div>
+                <label for="mealType">Meal type</label>
+                <select id="mealType">
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="snack">Snack</option>
+                </select>
+            </div>
+            <div>
+                <label for="mealUserId">User ID</label>
+                <input id="mealUserId" type="text" placeholder="defaultuser">
+            </div>
+        </div>
+
+        <div>
+            <label for="mealItems">What did you eat?</label>
+            <input id="mealItems" type="text"
+                   placeholder="Example: 3 eggs, avocado, black coffee">
+        </div>
+
+        <div class="row" style="justify-content: space-between; align-items: center;">
+            <button id="mealLogBtn" class="btn-primary">Log meal</button>
+            <div class="status" id="mealStatus">Idle</div>
+        </div>
+    </section>
+
     <!-- LEFT: Request builder -->
     <section class="panel">
         <h2>Request</h2>
@@ -207,8 +239,11 @@
 </main>
 
 <script>
-    // TODO: replace with your real HTTP endpoint once your Azure Function / API is live
-    const ORCHESTRATOR_ENDPOINT = "http://localhost:7071/api/orchestrate";
+    // Orchestrator HTTP endpoint
+    const ORCHESTRATOR_ENDPOINT = "http://localhost:3000/api/orchestrate";
+
+    // Direct meal logging endpoint (same logMeal Azure Function used in your tests)
+    const MEAL_LOG_ENDPOINT = "https://lifevault-api.azurewebsites.net/api/logMeal"; // [cite:3]
 
     const runBtn = document.getElementById('runBtn');
     const exampleBtn = document.getElementById('exampleBtn');
@@ -219,6 +254,13 @@
     const statusText = document.getElementById('statusText');
     const finalResponse = document.getElementById('finalResponse');
     const agentsList = document.getElementById('agentsList');
+
+    // Quick meal log elements
+    const mealLogBtn  = document.getElementById('mealLogBtn');
+    const mealTypeSel = document.getElementById('mealType');
+    const mealUserId  = document.getElementById('mealUserId');
+    const mealItems   = document.getElementById('mealItems');
+    const mealStatus  = document.getElementById('mealStatus');
 
     exampleBtn.addEventListener('click', () => {
         inputText.value = "Plan my next 7 days so I can make serious progress on LifeVault, stay on top of MSSA, and not burn out physically.";
@@ -252,7 +294,6 @@
         agentsList.innerHTML = "";
 
         try {
-            // If you don't have the endpoint yet, simulate a response:
             if (ORCHESTRATOR_ENDPOINT.includes("YOUR_ENDPOINT_HERE")) {
                 await new Promise(r => setTimeout(r, 800));
                 finalResponse.textContent =
@@ -302,6 +343,50 @@
             statusText.textContent = "Error.";
         } finally {
             runBtn.disabled = false;
+        }
+    });
+
+    // Quick Meal Log handler – posts directly to logMeal Azure Function
+    mealLogBtn.addEventListener('click', async () => {
+        const items = mealItems.value.trim();
+        if (!items) {
+            alert("Please enter what you ate.");
+            return;
+        }
+
+        const userIdVal = mealUserId.value.trim() || "defaultuser";
+        const mealType = mealTypeSel.value;
+
+        const payload = {
+            userId: userIdVal,
+            timestamp: new Date().toISOString(),
+            mealType,
+            foodItems: items,
+            gradeAnalysis: ""  // let backend/agent fill or leave blank
+        }; // matches the structure you already logged into MealLog.[cite:2][cite:4][cite:5]
+
+        mealLogBtn.disabled = true;
+        mealStatus.textContent = "Logging meal...";
+
+        try {
+            const res = await fetch(MEAL_LOG_ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                throw new Error("HTTP " + res.status + " " + res.statusText);
+            }
+
+            const data = await res.json();
+            mealStatus.textContent = "Meal logged! id=" + (data.id || "ok");
+            mealItems.value = "";
+        } catch (err) {
+            console.error(err);
+            mealStatus.textContent = "Error: " + err.message;
+        } finally {
+            mealLogBtn.disabled = false;
         }
     });
 </script>
